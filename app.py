@@ -1,19 +1,14 @@
 import os
 import logging
 from flask import Flask, render_template, request, jsonify, redirect, url_for
-from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy import text
 from swagger import swagger_config
+from sqlalchemy import text
+from extensions import db
 
 logging.basicConfig(level=logging.DEBUG)
 
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
 babel = Babel()
 
 def create_app():
@@ -34,6 +29,7 @@ def create_app():
         return response
     
     # Initialize extensions
+    from extensions import db
     db.init_app(app)
     babel.init_app(app)
     
@@ -66,12 +62,12 @@ def create_app():
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()
+        logging.error(f"Internal Server Error: {str(error)}")
         return render_template('errors/500.html'), 500
-            
+
     # Create database tables
     with app.app_context():
         try:
-            # Drop and recreate all tables
             db.create_all()
             logging.info("Database tables created successfully")
             

@@ -22,8 +22,9 @@
                 <div class="d-flex me-3">
                     <div class="input-group">
                         <span class="input-group-text">Employee status</span>
-                        <select class="form-select" style="max-width: 120px;">
-                            <option value="all">All</option>
+                        <select class="form-select" style="max-width: 120px;" id="statusFilter" onchange="updateStatusFilter(this.value)">
+                            <option value="0" {{ 'selected' if not request.args.get('show_inactive') }}>Active Only</option>
+                            <option value="1" {{ 'selected' if request.args.get('show_inactive') == '1' }}>Show All</option>
                         </select>
                     </div>
                 </div>
@@ -78,6 +79,15 @@
 
     <!-- Devices Table -->
     <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="mb-0">Employees</h3>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showInactive" 
+                               {% if show_inactive %}checked{% endif %}
+                               onchange="updateStatusFilter(this.checked)">
+                        <label class="form-check-label" for="showInactive">Show Inactive</label>
+                    </div>
+                </div>
         <div class="card-body">
             <table class="table">
                 <thead>
@@ -91,7 +101,7 @@
                         <th>SIMs</th>
                         <th>Entry</th>
                         <th>Exit</th>
-                        <th></th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -117,10 +127,15 @@
                         <td>{{ employee.sim_count }}</td>
                         <td>{{ employee.entry_date.strftime('%d.%m.%Y') if employee.entry_date else '' }}</td>
                         <td>{{ employee.exit_date.strftime('%d.%m.%Y') if employee.exit_date else '' }}</td>
-                        <td>
-                            <button class="btn btn-sm btn-icon btn-outline-primary" data-toggle="context-panel">
-                                <i data-feather="more-vertical"></i>
+                        <td class="d-flex gap-2">
+                            <button class="btn btn-sm btn-icon btn-outline-secondary">
+                                <i data-feather="edit-2"></i>
                             </button>
+                            <form method="POST" action="{{ url_for('devices.employee_toggle_status', id=employee.id) }}" class="d-inline">
+                                <button type="submit" class="btn btn-sm btn-icon {% if employee.state == 'active' %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                    <i data-feather="{% if employee.state == 'active' %}user-x{% else %}user-check{% endif %}"></i>
+                                </button>
+                            </form>
                         </td>
                     </tr>
                     {% endfor %}
@@ -275,6 +290,13 @@
 
     <!-- Issue New Device Button -->
     <a href="{{ url_for('devices.device_new') }}" class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
+<script>
+function updateStatusFilter(value) {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('show_inactive', value);
+    window.location.href = currentUrl.toString();
+}
+</script>
         <i data-feather="plus"></i> Issue a new
     </a>
 </div>
