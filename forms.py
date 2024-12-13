@@ -3,24 +3,20 @@ from wtforms import StringField, FloatField, DateField, TextAreaField, SelectFie
 from wtforms.validators import DataRequired, ValidationError
 from models import DeviceMake, DeviceModel
 
-class DeviceForm(FlaskForm):
-    device_type = SelectField('Typ zařízení', choices=[('mobile_phone', 'Mobilní telefon')])
+class PhoneForm(FlaskForm):
     make = SelectField('Výrobce', validators=[DataRequired()])
     model = SelectField('Model', validators=[DataRequired()])
     serial_number = StringField('Sériové číslo', validators=[DataRequired()])
-    cost = FloatField('Cena')
-    currency = SelectField('Měna', choices=[('CZK', 'CZK')])
-    date_of_purchase = DateField('Datum nákupu')
-    in_operation_from = DateField('V provozu od')
+    buying_price = FloatField('Kupní cena')
     note = TextAreaField('Poznámka')
 
     def __init__(self, *args, **kwargs):
-        super(DeviceForm, self).__init__(*args, **kwargs)
-        self.make.choices = [(m.name, m.name) for m in DeviceMake.query.order_by(DeviceMake.name).all()]
+        super(PhoneForm, self).__init__(*args, **kwargs)
+        self.make.choices = [(m.code, m.text) for m in DeviceMake.query.order_by(DeviceMake.text).all()]
         if self.make.data:
-            make = DeviceMake.query.filter_by(name=self.make.data).first()
+            make = DeviceMake.query.filter_by(code=self.make.data).first()
             if make:
-                self.model.choices = [(m.name, m.name) for m in DeviceModel.query.filter_by(make_id=make.id).order_by(DeviceModel.name).all()]
+                self.model.choices = [(m.code, m.text) for m in DeviceModel.query.filter_by(make_id=make.id).order_by(DeviceModel.text).all()]
 
 class AssignmentForm(FlaskForm):
     note = TextAreaField('Poznámka')

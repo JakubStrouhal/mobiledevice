@@ -40,7 +40,12 @@ def create_app():
             
     # Create database tables
     with app.app_context():
-        db.create_all()
+        try:
+            db.create_all()
+            logging.info("Database tables created successfully")
+        except Exception as e:
+            logging.error(f"Error creating database tables: {str(e)}")
+            raise
         
     return app
 

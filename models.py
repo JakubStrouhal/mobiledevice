@@ -2,7 +2,7 @@ from datetime import datetime
 from app import db
 
 class DeviceMake(db.Model):
-    """Číselník výrobců"""
+    """Device manufacturers catalog"""
     __tablename__ = 'device_make'
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), nullable=False, unique=True)
@@ -11,7 +11,7 @@ class DeviceMake(db.Model):
     phones = db.relationship('Phone', backref='make', lazy=True)
 
 class DeviceModel(db.Model):
-    """Číselník modelů"""
+    """Device models catalog"""
     __tablename__ = 'device_model'
     id = db.Column(db.Integer, primary_key=True)
     code = db.Column(db.String(20), nullable=False)
@@ -21,7 +21,7 @@ class DeviceModel(db.Model):
     __table_args__ = (db.UniqueConstraint('make_id', 'code', name='uq_model_make_code'),)
 
 class Phone(db.Model):
-    """Telefony"""
+    """Phones inventory"""
     __tablename__ = 'phones'
     id = db.Column(db.Integer, primary_key=True)
     make_id = db.Column(db.Integer, db.ForeignKey('device_make.id'), nullable=False)
@@ -34,7 +34,7 @@ class Phone(db.Model):
     assignments = db.relationship('PhoneAssignment', backref='phone', lazy=True)
 
 class User(db.Model):
-    """Uživatelé"""
+    """Users"""
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     employee_id = db.Column(db.String(20), unique=True, nullable=False)
@@ -46,7 +46,7 @@ class User(db.Model):
     assignments = db.relationship('PhoneAssignment', backref='user', lazy=True)
 
 class PhoneAssignment(db.Model):
-    """Přiřazení telefonů"""
+    """Phone assignments"""
     __tablename__ = 'phone_assignments'
     id = db.Column(db.Integer, primary_key=True)
     phone_id = db.Column(db.Integer, db.ForeignKey('phones.id'), nullable=False)
