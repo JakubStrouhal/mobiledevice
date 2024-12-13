@@ -19,7 +19,18 @@ def create_app():
     app = Flask(__name__)
     
     # Configuration
-    app.config.from_object('config.Config')
+    if os.environ.get('FLASK_ENV') == 'production':
+        app.config.from_object('config.ProductionConfig')
+    else:
+        app.config.from_object('config.Config')
+        
+    # Add security headers in production
+    @app.after_request
+    def add_security_headers(response):
+        if app.config.get('SECURITY_HEADERS'):
+            for header, value in app.config['SECURITY_HEADERS'].items():
+                response.headers[header] = value
+        return response
     
     # Initialize extensions
     db.init_app(app)
