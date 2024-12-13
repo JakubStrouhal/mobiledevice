@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, FloatField, DateField, TextAreaField, SelectField
 from wtforms.validators import DataRequired, ValidationError
-from models import DeviceMake, DeviceModel, PhoneStatus
+from models import DeviceMake, DeviceModel, PhoneStatus, DeviceMakeEnum, DeviceModelEnum
 
 class PhoneForm(FlaskForm):
     make = SelectField('Výrobce', validators=[DataRequired()])
@@ -17,11 +17,11 @@ class PhoneForm(FlaskForm):
 
     def __init__(self, *args, **kwargs):
         super(PhoneForm, self).__init__(*args, **kwargs)
-        self.make.choices = [(m.code, m.text) for m in DeviceMake.query.order_by(DeviceMake.text).all()]
+        self.make.choices = [(make.value, make.value) for make in DeviceMakeEnum]
+        
         if self.make.data:
-            make = DeviceMake.query.filter_by(code=self.make.data).first()
-            if make:
-                self.model.choices = [(m.code, m.text) for m in DeviceModel.query.filter_by(make_id=make.id).order_by(DeviceModel.text).all()]
+            models = DeviceModelEnum.get_models_for_make(self.make.data)
+            self.model.choices = models
 
 class AssignmentForm(FlaskForm):
     note = TextAreaField('Poznámka')

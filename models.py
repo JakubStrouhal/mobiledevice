@@ -1,5 +1,37 @@
 from datetime import datetime
+from enum import Enum
 from app import db
+
+class DeviceMakeEnum(str, Enum):
+    SAMSUNG = "Samsung"
+    APPLE = "Apple"
+    HUAWEI = "Huawei"
+    XIAOMI = "Xiaomi"
+    GOOGLE = "Google"
+    MOTOROLA = "Motorola"
+    NOKIA = "Nokia"
+
+class DeviceModelEnum:
+    MODELS = {
+        DeviceMakeEnum.SAMSUNG: [
+            ("A12", "Galaxy A12"),
+            ("S21", "Galaxy S21"),
+            ("S22", "Galaxy S22")
+        ],
+        DeviceMakeEnum.APPLE: [
+            ("IP13", "iPhone 13"),
+            ("IP14", "iPhone 14"),
+            ("IP15", "iPhone 15")
+        ],
+        DeviceMakeEnum.HUAWEI: [
+            ("P40", "P40 Pro"),
+            ("P30", "P30 Lite")
+        ]
+    }
+
+    @staticmethod
+    def get_models_for_make(make: DeviceMakeEnum):
+        return DeviceModelEnum.MODELS.get(make, [])
 
 class DeviceMake(db.Model):
     """Device manufacturers catalog"""
@@ -9,6 +41,10 @@ class DeviceMake(db.Model):
     text = db.Column(db.String(100), nullable=False)
     models = db.relationship('DeviceModel', backref='make', lazy=True)
     phones = db.relationship('Phone', backref='make', lazy=True)
+
+    @staticmethod
+    def get_choices():
+        return [(make.value, make.value) for make in DeviceMakeEnum]
 
 class DeviceModel(db.Model):
     """Device models catalog"""
