@@ -4,9 +4,12 @@ from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
+from flask_wtf.csrf import CSRFProtect
 from swagger import swagger_config
 from sqlalchemy import text as sqlalchemy_text
 from extensions import db
+
+csrf = CSRFProtect()
 
 # Configure logging
 if os.environ.get('FLASK_ENV') == 'production':
@@ -44,6 +47,7 @@ def create_app():
     from extensions import db
     db.init_app(app)
     babel.init_app(app)
+    csrf.init_app(app)
     
     def get_locale():
         return 'cs'
