@@ -113,7 +113,7 @@
                 </thead>
                 <tbody>
                     {% for employee in employees %}
-                    <tr class="employee-row" data-employee-id="{{ employee.id }}" style="cursor: pointer;">
+                    <tr class="employee-row" data-employee-id="{{ employee.id }}" style="cursor: pointer;" onclick="handleEmployeeRowClick(this, {{ employee.id }})">
                         <td>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="employee" value="{{ employee.id }}">
@@ -352,6 +352,57 @@ function updateStatusFilter(value) {
     currentUrl.searchParams.set('show_inactive', value);
     window.location.href = currentUrl.toString();
 }
+document.addEventListener('DOMContentLoaded', function() {
+    // Close panel buttons
+    document.getElementById('closeContextPanel')?.addEventListener('click', function() {
+        document.getElementById('contextPanel').style.transform = 'translateX(100%)';
+    });
+    
+    // Initialize tooltips
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+    });
+});
+
+function handleEmployeeRowClick(row, employeeId) {
+    // Remove active class from all rows
+    document.querySelectorAll('.employee-row').forEach(r => r.classList.remove('table-active'));
+    
+    // Add active class to clicked row
+    row.classList.add('table-active');
+    
+    // Show and populate context panel
+    const panel = document.getElementById('contextPanel');
+    
+    // Fetch employee details
+    fetch(`/devices/employee/${employeeId}/details`)
+        .then(response => response.json())
+        .then(data => {
+            // Update panel content
+            document.querySelector('#contextPanel h4').textContent = `${data.first_name} ${data.last_name}`;
+            document.querySelector('#contextPanel .text-muted').textContent = data.position || '';
+            document.querySelector('#contextPanel .badge').innerHTML = 
+                `<i data-feather="smartphone"></i> ${data.device_count}
+                 <i data-feather="credit-card"></i> ${data.sim_count}`;
+            
+            // Show panel
+            panel.style.transform = 'translateX(0)';
+            
+            // Re-initialize Feather icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            // Enable the issue new button
+            document.getElementById('issueNewButton').disabled = false;
+        })
+        .catch(error => {
+            console.error('Error fetching employee details:', error);
+            alert('Error loading employee details');
+        });
+}
+
 function updateFilters() {
     const name = document.getElementById('nameFilter').value;
     const surname = document.getElementById('surnameFilter').value;
