@@ -343,6 +343,36 @@ def employee_details(id):
         current_app.logger.error(f"Error fetching employee details: {str(e)}")
         return jsonify({'error': 'Failed to fetch employee details'}), 500
 
+@devices.route('/employee/<int:id>/edit', methods=['GET', 'POST'])
+def employee_edit(id):
+    """Edit employee endpoint.
+
+    GET: Display the employee edit form
+    POST: Handle form submission and update employee
+    """
+    try:
+        user = User.query.get_or_404(id)
+        form = EmployeeForm(obj=user)
+        
+        if request.method == 'POST' and form.validate():
+            current_app.logger.info(f"Processing employee edit form submission for ID: {id}")
+            
+            # Update employee with form data
+            form.populate_obj(user)
+            db.session.commit()
+            
+            current_app.logger.info(f"Successfully updated employee with ID: {id}")
+            flash('Employee updated successfully', 'success')
+            return redirect(url_for('devices.list_devices'))
+            
+        return render_template('devices/employee_edit.html', form=form, employee=user)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error editing employee {id}: {str(e)}")
+        flash('Error updating employee', 'error')
+        db.session.rollback()
+        return redirect(url_for('devices.list_devices'))
+
 @devices.route('/employee/<int:id>/toggle-status', methods=['POST'])
 def employee_toggle_status(id):
     """Toggle employee's active/inactive status."""

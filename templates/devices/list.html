@@ -135,9 +135,9 @@
                         <td>{{ employee.entry_date.strftime('%d.%m.%Y') if employee.entry_date else '' }}</td>
                         <td>{{ employee.exit_date.strftime('%d.%m.%Y') if employee.exit_date else '' }}</td>
                         <td class="d-flex gap-2">
-                            <button class="btn btn-sm btn-icon btn-outline-secondary">
+                            <a href="{{ url_for('devices.employee_edit', id=employee.id) }}" class="btn btn-sm btn-icon btn-outline-secondary">
                                 <i data-feather="edit-2"></i>
-                            </button>
+                            </a>
                             <form method="POST" action="{{ url_for('devices.employee_toggle_status', id=employee.id) }}" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-icon {% if employee.state == 'active' %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
                                     <i data-feather="{% if employee.state == 'active' %}user-x{% else %}user-check{% endif %}"></i>
