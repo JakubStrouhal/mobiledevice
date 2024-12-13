@@ -39,6 +39,27 @@ class Phone(db.Model):
     note = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     assignments = db.relationship('PhoneAssignment', backref='phone', lazy=True)
+    sim_assignments = db.relationship('PhoneSimAssignment', backref='phone', lazy=True)
+
+class SimCard(db.Model):
+    """SIM cards inventory"""
+    __tablename__ = 'sim_cards'
+    id = db.Column(db.Integer, primary_key=True)
+    serial_number = db.Column(db.String(100), unique=True, nullable=False)
+    phone_number = db.Column(db.String(20))
+    status = db.Column(db.String(20), nullable=False, default='INSTOCK')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    phone_assignments = db.relationship('PhoneSimAssignment', backref='sim_card', lazy=True)
+
+class PhoneSimAssignment(db.Model):
+    """Phone-SIM card assignments"""
+    __tablename__ = 'phone_sim_assignments'
+    id = db.Column(db.Integer, primary_key=True)
+    phone_id = db.Column(db.Integer, db.ForeignKey('phones.id'), nullable=False)
+    sim_id = db.Column(db.Integer, db.ForeignKey('sim_cards.id'), nullable=False)
+    assigned_date = db.Column(db.Date, nullable=False)
+    returned_date = db.Column(db.Date)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 class User(db.Model):
     """Users"""
