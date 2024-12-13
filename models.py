@@ -57,9 +57,12 @@ class PhoneSimAssignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     phone_id = db.Column(db.Integer, db.ForeignKey('phones.id'), nullable=False)
     sim_id = db.Column(db.Integer, db.ForeignKey('sim_cards.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     assigned_date = db.Column(db.Date, nullable=False)
     returned_date = db.Column(db.Date)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    user = db.relationship('User', backref='sim_assignments')
 
 class User(db.Model):
     """Users"""
@@ -70,7 +73,10 @@ class User(db.Model):
     last_name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120))
     position = db.Column(db.String(100))
-    state = db.Column(db.String(20), default='active')
+    country = db.Column(db.String(2), default='CZ')  # ISO country code
+    state = db.Column(db.String(20), default='active')  # active, maternity_leave, inactive
+    entry_date = db.Column(db.Date)
+    exit_date = db.Column(db.Date)
     assignments = db.relationship('PhoneAssignment', backref='user', lazy=True)
 
 class PhoneAssignment(db.Model):
