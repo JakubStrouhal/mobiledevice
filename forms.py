@@ -51,4 +51,4 @@ class EmployeeForm(FlaskForm):
         ('maternity_leave', 'Maternity Leave'),
         ('inactive', 'Inactive')
     ], default='active')
-    entry_date = DateField('Entry Date', format='%Y-%m-%d')
+    entry_date = DateField('Entry Date', format='%Y-%m-%d', validators=[DataRequired()])

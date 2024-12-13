@@ -98,7 +98,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">{{ form.entry_date.label }}</label>
-                            {{ form.entry_date(class="form-control", type="date") }}
+                            {{ form.entry_date(class="form-control", type="date", required=true) }}
                             {% if form.entry_date.errors %}
                             <div class="invalid-feedback d-block">
                                 {% for error in form.entry_date.errors %}
