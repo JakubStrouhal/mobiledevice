@@ -165,6 +165,44 @@ def device_new():
 
     return render_template('devices/edit.html', form=form)
 
+@devices.route('/<int:id>/assign', methods=['POST'])
+def assign_device(id):
+    """Assign a device to a user."""
+    try:
+        device = Phone.query.get_or_404(id)
+        user_id = request.form.get('user_id')
+        note = request.form.get('note')
+        
+        if not user_id:
+            flash('User ID is required', 'error')
+            return redirect(url_for('devices.device_detail', id=id))
+            
+        # Check if user exists
+        user = User.query.get_or_404(user_id)
+        
+        # Create new assignment
+        assignment = PhoneAssignment(
+            phone_id=id,
+            user_id=user_id,
+            assigned_date=datetime.now().date(),
+            note=note,
+            protocol_number=f"PRO-{datetime.now().strftime('%Y%m%d')}-{id}"
+        )
+        
+        # Update device status
+        device.status = PhoneStatus.ISSUED.value
+        
+        db.session.add(assignment)
+        db.session.commit()
+        
+        flash(f'Device successfully assigned to {user.first_name} {user.last_name}', 'success')
+        return redirect(url_for('devices.device_detail', id=id))
+        
+    except Exception as e:
+        current_app.logger.error(f"Error assigning device: {str(e)}")
+        db.session.rollback()
+        flash('Error assigning device', 'error')
+        return redirect(url_for('devices.device_detail', id=id))
 @devices.route('/models/<make>')
 def get_models(make):
     try:
