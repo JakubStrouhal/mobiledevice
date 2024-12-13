@@ -131,10 +131,11 @@ body {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
+    background-color: #F3F6FF;
 }
 
 .btn-outline-secondary:hover {
-    background-color: #F8F9FA;
+    background-color: #F3F6FF;
     border-color: #CED4DA;
     color: #6C757D;
 }
