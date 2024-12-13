@@ -174,7 +174,7 @@ def get_models(make):
         # Convert the make parameter to enum value
         make_enum = None
         for enum_member in DeviceMakeEnum:
-            if enum_member.value.lower() == make.lower():
+            if enum_member.value == make:  # Direct match without case conversion
                 make_enum = enum_member
                 break
         
@@ -185,6 +185,10 @@ def get_models(make):
         # Get models for the make
         models = DeviceModelEnum.get_models_for_make(make_enum)
         current_app.logger.info(f"Retrieved models for {make}: {models}")
+        
+        if not models:
+            current_app.logger.warning(f"No models found for make: {make}")
+            return jsonify([])
         
         # Return models as a list of dictionaries with value and label
         model_list = [{"value": code, "label": text} for code, text in models]
