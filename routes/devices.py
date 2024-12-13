@@ -89,18 +89,42 @@ def device_sign_off(id):
 def device_new():
     form = PhoneForm()
     if form.validate_on_submit():
-        device = Phone()
-        form.populate_obj(device)
-        # Get the make and model IDs from the database
-        make = DeviceMake.query.filter_by(code=form.make.data).first()
-        model = DeviceModel.query.filter_by(code=form.model.data, make_id=make.id).first()
-        device.make_id = make.id
-        device.model_id = model.id
-        db.session.add(device)
-        db.session.commit()
-        flash('New device added successfully', 'success')
-        return redirect(url_for('devices.device_detail', id=device.id))
-        
+        try:
+            device = Phone()
+            form.populate_obj(device)
+            
+            # Get or create make
+            make = DeviceMake.query.filter_by(code=form.make.data).first()
+            if not make:
+                make = DeviceMake(code=form.make.data, text=form.make.data)
+                db.session.add(make)
+                db.session.flush()
+            
+            # Get or create model
+            model = DeviceModel.query.filter_by(code=form.model.data, make_id=make.id).first()
+            if not model:
+                model = DeviceModel(
+                    code=form.model.data,
+                    text=dict(DeviceModelEnum.get_models_for_make(DeviceMakeEnum(form.make.data))).get(form.model.data, form.model.data),
+                    make_id=make.id
+                )
+                db.session.add(model)
+                db.session.flush()
+            
+            device.make_id = make.id
+            device.model_id = model.id
+            device.status = PhoneStatus.INSTOCK.value
+            
+            db.session.add(device)
+            db.session.commit()
+            flash('New device added successfully', 'success')
+            return redirect(url_for('devices.device_detail', id=device.id))
+            
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error creating new device: {str(e)}")
+            flash('Error creating new device', 'error')
+            
     return render_template('devices/edit.html', form=form)
 
 @devices.route('/models/<make>')

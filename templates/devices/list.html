@@ -14,7 +14,7 @@
                     <a class="nav-link" href="#"><i data-feather="smartphone"></i> Mobiles</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#"><i data-feather="sim"></i> SIM cards</a>
+                    <a class="nav-link" href="#"><i data-feather="credit-card"></i> SIM cards</a>
                 </li>
             </ul>
         </div>
@@ -217,8 +217,8 @@
     {% endfor %}
 
     <!-- Issue New Device Button -->
-    <button class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
+    <a href="{{ url_for('devices.device_new') }}" class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
         <i data-feather="plus"></i> Issue a new
-    </button>
+    </a>
 </div>
 {% endblock %}
