@@ -1,9 +1,11 @@
 import os
 import logging
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
+from flask_swagger_ui import get_swaggerui_blueprint
 from sqlalchemy.orm import DeclarativeBase
+from swagger import swagger_config
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -27,6 +29,22 @@ def create_app():
         return 'cs'
     
     babel.select_locale_func = get_locale
+    
+    # Register Swagger UI blueprint
+    SWAGGER_URL = '/swagger'
+    API_URL = '/swagger.json'
+    swaggerui_blueprint = get_swaggerui_blueprint(
+        SWAGGER_URL,
+        API_URL,
+        config={
+            'app_name': "Phone Management System API"
+        }
+    )
+    app.register_blueprint(swaggerui_blueprint, url_prefix=SWAGGER_URL)
+    
+    @app.route('/swagger.json')
+    def swagger():
+        return jsonify(swagger_config())
     
     # Register error handlers
     @app.errorhandler(404)
