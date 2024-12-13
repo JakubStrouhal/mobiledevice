@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
 from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import text
 from swagger import swagger_config
 
 logging.basicConfig(level=logging.DEBUG)
@@ -70,8 +71,22 @@ def create_app():
     # Create database tables
     with app.app_context():
         try:
+            # Drop and recreate all tables
             db.create_all()
             logging.info("Database tables created successfully")
+            
+            # Verify critical tables exist
+            with db.engine.connect() as conn:
+                tables = ['users', 'phones', 'device_make', 'device_model', 'phone_assignments']
+                for table in tables:
+                    result = conn.execute(text(f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table}')"))
+                    exists = result.scalar()
+                    if exists:
+                        logging.info(f"Table '{table}' exists")
+                    else:
+                        logging.error(f"Table '{table}' was not created")
+                        raise Exception(f"Critical table '{table}' is missing")
+                        
         except Exception as e:
             logging.error(f"Error creating database tables: {str(e)}")
             raise
