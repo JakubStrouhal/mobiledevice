@@ -343,6 +343,11 @@ def employee_details(id):
         current_app.logger.error(f"Error fetching employee details: {str(e)}")
         return jsonify({'error': 'Failed to fetch employee details'}), 500
 
+from flask import current_app, flash, redirect, render_template, request, url_for
+from models import User
+from extensions import db
+from forms import EmployeeForm
+
 @devices.route('/employee/<int:id>/edit', methods=['GET', 'POST'])
 def employee_edit(id):
     """Edit employee endpoint.
