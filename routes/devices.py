@@ -142,38 +142,47 @@ def employee_new():
     form = EmployeeForm()
     if request.method == 'POST':
         current_app.logger.debug(f"Form data received: {request.form}")
-        if form.validate_on_submit():
-            try:
-                # Create new employee instance with form data
-                employee = User(
-                    employee_id=form.employee_id.data,
-                    first_name=form.first_name.data,
-                    last_name=form.last_name.data,
-                    email=form.email.data,
-                    position=form.position.data,
-                    country=form.country.data,
-                    state=form.state.data,
-                    entry_date=form.entry_date.data
-                )
-
-                current_app.logger.debug(f"Creating new employee: {employee.first_name} {employee.last_name}")
-                
-                # Add and commit to database
-                db.session.add(employee)
-                db.session.commit()
-                
-                current_app.logger.info(f"Successfully created employee with ID: {employee.id}")
-                flash('New employee added successfully', 'success')
-                return redirect(url_for('devices.list_devices'))
-            except Exception as e:
-                db.session.rollback()
-                current_app.logger.error(f"Error creating new employee: {str(e)}")
-                flash(f'Error creating new employee: {str(e)}', 'error')
-        else:
+        current_app.logger.debug(f"Form CSRF token valid: {form.csrf_token.current_token}")
+        
+        if not form.validate():
             current_app.logger.error("Form validation failed")
             for field, errors in form.errors.items():
                 for error in errors:
                     current_app.logger.error(f"Validation error - {field}: {error}")
                     flash(f'{field}: {error}', 'error')
+            return render_template('devices/employee_new.html', form=form)
+        
+        try:
+            # Create new employee instance with form data
+            employee = User(
+                employee_id=form.employee_id.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                email=form.email.data,
+                position=form.position.data,
+                country=form.country.data,
+                state=form.state.data,
+                entry_date=form.entry_date.data
+            )
+
+            current_app.logger.debug(f"Creating new employee: {employee.first_name} {employee.last_name}")
+            current_app.logger.debug(f"Employee data: {vars(employee)}")
+            
+            # Add and commit to database
+            db.session.add(employee)
+            try:
+                db.session.commit()
+                current_app.logger.info(f"Successfully created employee with ID: {employee.id}")
+                flash('New employee added successfully', 'success')
+                return redirect(url_for('devices.list_devices'))
+            except Exception as commit_error:
+                db.session.rollback()
+                current_app.logger.error(f"Database commit error: {str(commit_error)}")
+                flash(f'Error saving employee: {str(commit_error)}', 'error')
+                
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error creating new employee: {str(e)}")
+            flash(f'Error creating new employee: {str(e)}', 'error')
     
     return render_template('devices/employee_new.html', form=form)

@@ -9,8 +9,15 @@
                     <h3 class="mb-0">Add New Employee</h3>
                 </div>
                 <div class="card-body">
-                    <form method="POST" class="needs-validation" novalidate>
+                    <form method="POST" class="needs-validation">
                         {{ form.csrf_token }}
+                        {% if form.csrf_token.errors %}
+                            <div class="alert alert-danger">
+                                {% for error in form.csrf_token.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
                         
                         <div class="mb-3">
                             <label class="form-label">{{ form.employee_id.label }}</label>
