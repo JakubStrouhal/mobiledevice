@@ -119,5 +119,6 @@ def register_blueprints(app):
 register_blueprints(app)
 
 if __name__ == '__main__':
-    # Production settings: debug disabled, threaded enabled
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
+    # Production settings with proper host binding
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
