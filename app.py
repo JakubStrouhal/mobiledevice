@@ -101,3 +101,6 @@ def register_blueprints(app):
         return redirect(url_for('devices.list_devices'))
 
 register_blueprints(app)
+
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
