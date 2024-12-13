@@ -158,4 +158,67 @@
         </div>
     </div>
 </div>
+
+<!-- Right Side Context Panel -->
+<div class="position-fixed end-0 top-0 h-100 bg-white border-start p-4" style="width: 400px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4>{{ user.first_name }} {{ user.last_name }}</h4>
+            <p class="text-muted mb-0">{{ user.position }}</p>
+        </div>
+        <div class="badge bg-primary rounded-pill">
+            <i data-feather="smartphone"></i> {{ device_count }}
+            <i data-feather="credit-card"></i> {{ sim_count }}
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-4">
+        <li class="nav-item">
+            <a class="nav-link active" href="#"><i data-feather="smartphone"></i> Mobiles</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#"><i data-feather="credit-card"></i> SIMs</a>
+        </li>
+    </ul>
+
+    <!-- Device Cards -->
+    {% for device in user_devices %}
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <i data-feather="smartphone" class="me-2 text-primary"></i>
+                    <div>
+                        <h6 class="mb-0">{{ device.make.text }} {{ device.model.text }}</h6>
+                        <small class="text-muted">{{ device.serial_number }}</small>
+                    </div>
+                </div>
+                <div class="dropdown">
+                    <button class="btn btn-link" data-bs-toggle="dropdown">
+                        <i data-feather="more-vertical"></i>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="{{ url_for('devices.device_return', id=device.id) }}">
+                            <i data-feather="corner-down-left"></i> Return</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('devices.device_edit', id=device.id) }}">
+                            <i data-feather="edit"></i> Edit</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('devices.device_sign_off', id=device.id) }}">
+                            <i data-feather="log-out"></i> Sign off</a></li>
+                    </ul>
+                </div>
+            </div>
+            {% if device.status == 'ISSUED' %}
+            <div class="mt-3">
+                <small class="text-muted">Released: {{ device.release_date.strftime('%d.%m.%Y') }}</small>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Issue New Device Button -->
+    <button class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
+        <i data-feather="plus"></i> Issue a new
+    </button>
+</div>
 {% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="display-1">500</h1>
+            <p class="lead">Interní chyba serveru</p>
+            <p>Omlouváme se, ale na serveru došlo k neočekávané chybě.</p>
+            <a href="{{ url_for('devices.list_devices') }}" class="btn btn-primary">
+                <i data-feather="home"></i> Zkusit znovu
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

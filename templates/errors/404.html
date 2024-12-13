@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 text-center">
+            <h1 class="display-1">404</h1>
+            <p class="lead">Stránka nebyla nalezena</p>
+            <p>Požadovaná stránka neexistuje nebo byla přesunuta.</p>
+            <a href="{{ url_for('devices.list_devices') }}" class="btn btn-primary">
+                <i data-feather="home"></i> Zpět na hlavní stránku
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

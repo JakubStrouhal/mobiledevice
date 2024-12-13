@@ -1,6 +1,6 @@
 import os
 import logging
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -80,5 +80,13 @@ def create_app():
 
 app = create_app()
 
-# Import routes after app is created to avoid circular imports
-from routes import *
+# Import and register blueprints after app is created to avoid circular imports
+def register_blueprints(app):
+    from routes.devices import devices as devices_blueprint
+    app.register_blueprint(devices_blueprint, url_prefix='/devices')
+
+    @app.route('/')
+    def index():
+        return redirect(url_for('devices.list_devices'))
+
+register_blueprints(app)
