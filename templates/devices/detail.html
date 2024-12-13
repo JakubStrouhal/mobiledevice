@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>{{ device.make }} {{ device.model }}</h2>
+            <div>
+                <a href="{{ url_for('device_edit', id=device.id) }}" class="btn btn-outline-primary">
+                    <i data-feather="edit"></i> Upravit
+                </a>
+                <a href="{{ url_for('device_assign', id=device.id) }}" class="btn btn-primary">
+                    <i data-feather="user-plus"></i> Přiřadit
+                </a>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-3">Typ zařízení</dt>
+                    <dd class="col-sm-9">{{ device.device_type }}</dd>
+
+                    <dt class="col-sm-3">Výrobce</dt>
+                    <dd class="col-sm-9">{{ device.make }}</dd>
+
+                    <dt class="col-sm-3">Model</dt>
+                    <dd class="col-sm-9">{{ device.model }}</dd>
+
+                    <dt class="col-sm-3">Sériové číslo</dt>
+                    <dd class="col-sm-9">{{ device.serial_number }}</dd>
+
+                    <dt class="col-sm-3">Cena</dt>
+                    <dd class="col-sm-9">{{ device.cost }} {{ device.currency }}</dd>
+
+                    <dt class="col-sm-3">Datum nákupu</dt>
+                    <dd class="col-sm-9">{{ device.date_of_purchase.strftime('%d.%m.%Y') }}</dd>
+
+                    <dt class="col-sm-3">V provozu od</dt>
+                    <dd class="col-sm-9">{{ device.in_operation_from.strftime('%d.%m.%Y') }}</dd>
+
+                    <dt class="col-sm-3">Poznámka</dt>
+                    <dd class="col-sm-9">{{ device.note or '' }}</dd>
+                </dl>
+            </div>
+        </div>
+
+        <h3>Historie přiřazení</h3>
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Uživatel</th>
+                            <th>Vydáno</th>
+                            <th>Vráceno</th>
+                            <th>Protokol</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in device.assignments %}
+                        <tr>
+                            <td>{{ assignment.user.first_name }} {{ assignment.user.last_name }}</td>
+                            <td>{{ assignment.released_date.strftime('%d.%m.%Y') }}</td>
+                            <td>{{ assignment.returned_date.strftime('%d.%m.%Y') if assignment.returned_date else '-' }}</td>
+                            <td>
+                                <a href="{{ url_for('handover_protocol', assignment_id=assignment.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i data-feather="file-text"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

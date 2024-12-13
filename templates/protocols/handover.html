@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container my-4">
+    <div class="card">
+        <div class="card-body">
+            <h1 class="text-center mb-4">PŘEDÁVACÍ PROTOKOL</h1>
+            
+            <div class="mb-4">
+                <p>Já</p>
+                <p class="h4">{{ assignment.user.first_name }} {{ assignment.user.last_name }}</p>
+                <p>se zavazuji a svým podpisem přebírám hmotnou odpovědnost za následující mobilní telefon/příslušenství/HW/SW/SIM, který po ukončení pracovního poměru vrátím:</p>
+            </div>
+
+            <table class="table table-bordered mb-4">
+                <thead>
+                    <tr>
+                        <th>Popis</th>
+                        <th>Sériové číslo</th>
+                        <th>Cena</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>{{ assignment.device.make }} {{ assignment.device.model }}</td>
+                        <td>{{ assignment.device.serial_number }}</td>
+                        <td>{{ assignment.device.cost }} {{ assignment.device.currency }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="mb-4">
+                <p>Jsem si vědom toho, že pro používání mobilního telefonu platí následující zásady:</p>
+                <ul>
+                    <li>Telefon je majetkem Aures Holding a.s.</li>
+                    <li>Telefon užívám v souladu s předpisy</li>
+                    <li>Při ztrátě, odcizení nebo poškození telefonu mimo záruční opravy krytí uhradím způsobenou škodu</li>
+                    <li>Užívatel bere na vědomí, že telefon používá výhradně správě a monitoringu prostřednictvím bezpečnostního systému "MDM", který slouží zejména pro ochranu mobilního telefonu a aplikací</li>
+                    <li>Mobilní telefon může být při údržbě nebo při jiném právním nároku krytí vymazán/zablokován</li>
+                    <li>Svěřený telefon je určen pouze pro účely spojené s pracovní náplní uživatele</li>
+                </ul>
+            </div>
+
+            <div class="mb-4">
+                <p>Postup při ztrátě nebo odcizení:</p>
+                <p>{{ assignment.note or '' }}</p>
+            </div>
+
+            <div class="row mt-5">
+                <div class="col-6">
+                    <p>Datum: {{ assignment.released_date.strftime('%d.%m.%Y') }}</p>
+                </div>
+                <div class="col-6 text-end">
+                    <p>Podpis:</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <button onclick="window.print()" class="btn btn-primary">
+            <i data-feather="printer"></i> Tisk protokolu
+        </button>
+    </div>
+</div>
+{% endblock %}

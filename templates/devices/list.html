@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2>Zařízení</h2>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDeviceModal">
+                <i data-feather="plus"></i> Nové zařízení
+            </button>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Typ</th>
+                            <th>Výrobce</th>
+                            <th>Model</th>
+                            <th>Sériové číslo</th>
+                            <th>Stav</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for device in devices %}
+                        <tr>
+                            <td>{{ device.device_type }}</td>
+                            <td>{{ device.make }}</td>
+                            <td>{{ device.model }}</td>
+                            <td>{{ device.serial_number }}</td>
+                            <td>
+                                <span class="badge bg-{{ 'success' if device.status == 'active' else 'secondary' }}">
+                                    {{ device.status }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{{ url_for('device_detail', id=device.id) }}" class="btn btn-sm btn-outline-primary">
+                                    <i data-feather="info"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
