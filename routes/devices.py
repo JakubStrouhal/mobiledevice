@@ -152,12 +152,20 @@ def employee_new():
                 state=form.state.data,
                 entry_date=form.entry_date.data
             )
+            current_app.logger.debug(f"Creating new employee: {employee.first_name} {employee.last_name}")
             db.session.add(employee)
             db.session.commit()
+            current_app.logger.info(f"Successfully created employee with ID: {employee.id}")
             flash('New employee added successfully', 'success')
             return redirect(url_for('devices.list_devices'))
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error creating new employee: {str(e)}")
-            flash('Error creating new employee', 'error')
+            flash(f'Error creating new employee: {str(e)}', 'error')
+    else:
+        for field, errors in form.errors.items():
+            for error in errors:
+                flash(f'{field}: {error}', 'error')
+                current_app.logger.error(f"Form validation error - {field}: {error}")
+    
     return render_template('devices/employee_new.html', form=form)
