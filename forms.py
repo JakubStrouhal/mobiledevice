@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, DecimalField, TextAreaField, SelectField
-from wtforms.validators import DataRequired, ValidationError
+from wtforms.validators import DataRequired, ValidationError, Email
 from models import DeviceMakeEnum, DeviceModelEnum, PhoneStatus, DealerEnum
 from wtforms.fields import DateField
 
@@ -38,3 +38,17 @@ class PhoneForm(FlaskForm):
 
 class AssignmentForm(FlaskForm):
     note = TextAreaField('Note')
+
+class EmployeeForm(FlaskForm):
+    employee_id = StringField('Employee ID', validators=[DataRequired()])
+    first_name = StringField('First Name', validators=[DataRequired()])
+    last_name = StringField('Last Name', validators=[DataRequired()])
+    email = StringField('Email', validators=[DataRequired(), Email()])
+    position = StringField('Position')
+    country = SelectField('Country', choices=[('CZ', 'Czech Republic')], default='CZ')
+    state = SelectField('State', choices=[
+        ('active', 'Active'),
+        ('maternity_leave', 'Maternity Leave'),
+        ('inactive', 'Inactive')
+    ], default='active')
+    entry_date = DateField('Entry Date', format='%Y-%m-%d')

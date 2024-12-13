@@ -135,3 +135,29 @@ def get_models(make):
         return jsonify([(code, text) for code, text in models])
     except ValueError:
         return jsonify([]), 404
+
+
+@devices.route('/employee/new', methods=['GET', 'POST'])
+def employee_new():
+    form = EmployeeForm()
+    if form.validate_on_submit():
+        try:
+            employee = User(
+                employee_id=form.employee_id.data,
+                first_name=form.first_name.data,
+                last_name=form.last_name.data,
+                email=form.email.data,
+                position=form.position.data,
+                country=form.country.data,
+                state=form.state.data,
+                entry_date=form.entry_date.data
+            )
+            db.session.add(employee)
+            db.session.commit()
+            flash('New employee added successfully', 'success')
+            return redirect(url_for('devices.list_devices'))
+        except Exception as e:
+            db.session.rollback()
+            current_app.logger.error(f"Error creating new employee: {str(e)}")
+            flash('Error creating new employee', 'error')
+    return render_template('devices/employee_new.html', form=form)
