@@ -23,9 +23,19 @@ def list_devices():
         # Get status filter from query params, default to showing only active
         show_inactive = request.args.get('show_inactive', '0') == '1'
         
+        # Get filter parameters
+        name_filter = request.args.get('name', '').strip()
+        surname_filter = request.args.get('surname', '').strip()
+        
         # Base query for users with ordered results
         users_query = User.query.order_by(User.last_name, User.first_name)
 
+        # Apply filters
+        if name_filter:
+            users_query = users_query.filter(User.first_name.ilike(f'%{name_filter}%'))
+        if surname_filter:
+            users_query = users_query.filter(User.last_name.ilike(f'%{surname_filter}%'))
+            
         # Filter active users unless show_inactive is True
         if not show_inactive:
             users_query = users_query.filter(User.state == 'active')

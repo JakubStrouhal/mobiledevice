@@ -70,11 +70,15 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Name</label>
-                    <input type="text" class="form-control" placeholder="Search...">
+                    <input type="text" class="form-control" id="nameFilter" name="name" 
+                           placeholder="Search..." value="{{ request.args.get('name', '') }}"
+                           onchange="updateFilters()">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Surname</label>
-                    <input type="text" class="form-control" placeholder="Search...">
+                    <input type="text" class="form-control" id="surnameFilter" name="surname" 
+                           placeholder="Search..." value="{{ request.args.get('surname', '') }}"
+                           onchange="updateFilters()">
                 </div>
             </div>
         </div>
@@ -323,123 +327,38 @@
 
     <!-- Issue New Device Button -->
     <a href="{{ url_for('devices.device_new') }}" class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
+        <i data-feather="plus"></i> Issue a new
+    </a>
+</div>
 <script>
+function updateFilters() {
+    const currentUrl = new URL(window.location.href);
+    const nameFilter = document.getElementById('nameFilter').value;
+    const surnameFilter = document.getElementById('surnameFilter').value;
+    const showInactive = currentUrl.searchParams.get('show_inactive') || '0';
+
+    // Update URL parameters
+    currentUrl.searchParams.set('show_inactive', showInactive);
+    if (nameFilter) currentUrl.searchParams.set('name', nameFilter);
+    else currentUrl.searchParams.delete('name');
+    if (surnameFilter) currentUrl.searchParams.set('surname', surnameFilter);
+    else currentUrl.searchParams.delete('surname');
+
+    window.location.href = currentUrl.toString();
+}
+
 function updateStatusFilter(value) {
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('show_inactive', value);
     window.location.href = currentUrl.toString();
 }
-</script>
-        <i data-feather="plus"></i> Issue a new
-    </a>
-</div>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const contextPanel = document.getElementById('contextPanel');
-    const closeButton = document.getElementById('closeContextPanel');
-    const issueNewPanel = document.getElementById('issueNewPanel');
-    const issueNewButton = document.getElementById('issueNewButton');
-    const closeIssueNewButton = document.getElementById('closeIssueNewPanel');
-    const employeeCheckboxes = document.querySelectorAll('input[name="employee"]');
-    const employeeRows = document.querySelectorAll('.employee-row');
-
-    // Handle row clicks
-    employeeRows.forEach(row => {
-        row.addEventListener('click', function(e) {
-            // Don't trigger if clicking on checkbox or buttons
-            if (e.target.closest('.form-check') || e.target.closest('.btn')) {
-                return;
-            }
-            
-            const employeeId = this.dataset.employeeId;
-            
-            // Remove active class from all rows
-            employeeRows.forEach(r => r.classList.remove('table-active'));
-            // Add active class to clicked row
-            this.classList.add('table-active');
-            
-            // Show context panel
-            contextPanel.style.transform = 'translateX(0)';
-            issueNewPanel.style.transform = 'translateX(100%)';
-            
-            // Update context panel content through AJAX
-            fetch(`/devices/employee/${employeeId}/details`)
-                .then(response => response.json())
-                .then(data => {
-                    // Update context panel content
-                    document.querySelector('#contextPanel h4').textContent = `${data.first_name} ${data.last_name}`;
-                    document.querySelector('#contextPanel .text-muted').textContent = data.position || '';
-                    
-                    // Update device and SIM counts
-                    const badgeContent = document.querySelector('#contextPanel .badge');
-                    badgeContent.innerHTML = `
-                        <i data-feather="smartphone"></i> ${data.device_count}
-                        <i data-feather="credit-card"></i> ${data.sim_count}
-                    `;
-                    
-                    // Re-initialize Feather icons
-                    if (typeof feather !== 'undefined') {
-                        feather.replace();
-                    }
-                })
-                .catch(error => console.error('Error:', error));
-        });
-    });
-    
-    // Handle context panel open buttons
-    document.querySelectorAll('[data-toggle="context-panel"]').forEach(button => {
-        button.addEventListener('click', function(e) {
-            e.preventDefault();
-            contextPanel.style.transform = 'translateX(0)';
-            issueNewPanel.style.transform = 'translateX(100%)'; // Close issue panel if open
-        });
-    });
-
-    // Handle close button click
-    closeButton.addEventListener('click', function() {
-        contextPanel.style.transform = 'translateX(100%)';
-    });
-
-    // Handle issue new panel
-    issueNewButton.addEventListener('click', function() {
-        issueNewPanel.style.transform = 'translateX(0)';
-        contextPanel.style.transform = 'translateX(100%)'; // Close context panel if open
-    });
-
-    closeIssueNewButton.addEventListener('click', function() {
-        issueNewPanel.style.transform = 'translateX(100%)';
-    });
-
-    // Handle employee selection
-    employeeCheckboxes.forEach(checkbox => {
-        checkbox.addEventListener('change', function() {
-            const isEmployeeSelected = Array.from(employeeCheckboxes).some(cb => cb.checked);
-            issueNewButton.disabled = !isEmployeeSelected;
-        });
-    });
-
-    // Handle form submission
-    document.getElementById('issueNewForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const formData = new FormData(this);
-        fetch('/devices/new', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                issueNewPanel.style.transform = 'translateX(100%)';
-                location.reload(); // Refresh to show new device
-            }
-        })
-        .catch(error => console.error('Error:', error));
-    });
-
-    // Initialize feather icons
-    if (typeof feather !== 'undefined') {
-        feather.replace();
-    }
-});
+function updateFilters() {
+    const name = document.getElementById('nameFilter').value;
+    const surname = document.getElementById('surnameFilter').value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('name', name);
+    url.searchParams.set('surname', surname);
+    window.location.href = url.toString();
+}
 </script>
 {% endblock %}
