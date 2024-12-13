@@ -264,7 +264,7 @@
 </div>
 
 <!-- Right Side Context Panel -->
-<div id="contextPanel" class="position-fixed end-0 top-0 h-100 bg-white border-start p-4" style="width: 400px; transition: transform 0.3s ease-in-out; transform: translateX(100%); z-index: 1050; display: none;">
+<div id="contextPanel" class="position-fixed end-0 top-0 h-100 bg-white border-start p-4" style="width: 400px; transition: transform 0.3s ease-in-out; transform: translateX(100%); z-index: 1050;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4>{{ user.first_name }} {{ user.last_name }}</h4>
@@ -370,9 +370,8 @@ function handleEmployeeRowClick(row, employeeId) {
     // Add active class to clicked row
     row.classList.add('table-active');
     
-    // Show and populate context panel
+    // Get and show context panel
     const panel = document.getElementById('contextPanel');
-    panel.style.display = 'block'; // Show the panel first
     
     // Fetch employee details
     fetch(`/devices/employee/${employeeId}/details`)
@@ -385,10 +384,8 @@ function handleEmployeeRowClick(row, employeeId) {
                 `<i data-feather="smartphone"></i> ${data.device_count}
                  <i data-feather="credit-card"></i> ${data.sim_count}`;
             
-            // Animate panel in
-            requestAnimationFrame(() => {
-                panel.style.transform = 'translateX(0)';
-            });
+            // Show panel with animation
+            panel.style.transform = 'translateX(0)';
             
             // Re-initialize Feather icons
             if (typeof feather !== 'undefined') {
@@ -401,7 +398,7 @@ function handleEmployeeRowClick(row, employeeId) {
         .catch(error => {
             console.error('Error fetching employee details:', error);
             alert('Error loading employee details');
-            panel.style.display = 'none'; // Hide panel on error
+            panel.style.transform = 'translateX(100%)';
         });
 }
 
