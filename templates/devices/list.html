@@ -109,7 +109,7 @@
                 </thead>
                 <tbody>
                     {% for employee in employees %}
-                    <tr>
+                    <tr class="employee-row" data-employee-id="{{ employee.id }}" style="cursor: pointer;">
                         <td>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="employee" value="{{ employee.id }}">
@@ -311,6 +311,50 @@ document.addEventListener('DOMContentLoaded', function() {
     const issueNewButton = document.getElementById('issueNewButton');
     const closeIssueNewButton = document.getElementById('closeIssueNewPanel');
     const employeeCheckboxes = document.querySelectorAll('input[name="employee"]');
+    const employeeRows = document.querySelectorAll('.employee-row');
+
+    // Handle row clicks
+    employeeRows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            // Don't trigger if clicking on checkbox or buttons
+            if (e.target.closest('.form-check') || e.target.closest('.btn')) {
+                return;
+            }
+            
+            const employeeId = this.dataset.employeeId;
+            
+            // Remove active class from all rows
+            employeeRows.forEach(r => r.classList.remove('table-active'));
+            // Add active class to clicked row
+            this.classList.add('table-active');
+            
+            // Show context panel
+            contextPanel.style.transform = 'translateX(0)';
+            issueNewPanel.style.transform = 'translateX(100%)';
+            
+            // Update context panel content through AJAX
+            fetch(`/devices/employee/${employeeId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update context panel content
+                    document.querySelector('#contextPanel h4').textContent = `${data.first_name} ${data.last_name}`;
+                    document.querySelector('#contextPanel .text-muted').textContent = data.position || '';
+                    
+                    // Update device and SIM counts
+                    const badgeContent = document.querySelector('#contextPanel .badge');
+                    badgeContent.innerHTML = `
+                        <i data-feather="smartphone"></i> ${data.device_count}
+                        <i data-feather="credit-card"></i> ${data.sim_count}
+                    `;
+                    
+                    // Re-initialize Feather icons
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        });
+    });
     
     // Handle context panel open buttons
     document.querySelectorAll('[data-toggle="context-panel"]').forEach(button => {

@@ -145,3 +145,20 @@ body {
     width: 16px;
     height: 16px;
 }
+
+.employee-row {
+    transition: background-color 0.2s ease;
+}
+
+.employee-row:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.employee-row.table-active {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.employee-row.table-active .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}

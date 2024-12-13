@@ -274,6 +274,34 @@ def inventory_report():
         flash('Error generating inventory report', 'error')
         return render_template('errors/500.html'), 500
 
+@devices.route('/employee/<int:id>/details')
+def employee_details(id):
+    """Get employee details for context panel."""
+    try:
+        user = User.query.get_or_404(id)
+        
+        # Count active devices and SIM cards
+        device_count = PhoneAssignment.query.filter(
+            PhoneAssignment.user_id == id,
+            PhoneAssignment.returned_date.is_(None)
+        ).count()
+        
+        sim_count = PhoneSimAssignment.query.filter(
+            PhoneSimAssignment.user_id == id,
+            PhoneSimAssignment.returned_date.is_(None)
+        ).count()
+        
+        return jsonify({
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'position': user.position,
+            'device_count': device_count,
+            'sim_count': sim_count
+        })
+    except Exception as e:
+        current_app.logger.error(f"Error fetching employee details: {str(e)}")
+        return jsonify({'error': 'Failed to fetch employee details'}), 500
+
 @devices.route('/employee/<int:id>/toggle-status', methods=['POST'])
 def employee_toggle_status(id):
     """Toggle employee's active/inactive status."""
