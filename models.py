@@ -24,14 +24,46 @@ class DealerEnum(str, Enum):
 class DeviceModelEnum:
     MODELS = {
         DeviceMakeEnum.SAMSUNG: [
+            # A Series
             ("A12", "Galaxy A12"),
+            ("A13", "Galaxy A13"),
+            ("A14", "Galaxy A14"),
+            ("A23", "Galaxy A23"),
+            ("A24", "Galaxy A24"),
+            ("A34", "Galaxy A34"),
+            ("A54", "Galaxy A54"),
+            # S Series
             ("S21", "Galaxy S21"),
-            ("S22", "Galaxy S22")
+            ("S21P", "Galaxy S21+"),
+            ("S21U", "Galaxy S21 Ultra"),
+            ("S22", "Galaxy S22"),
+            ("S22P", "Galaxy S22+"),
+            ("S22U", "Galaxy S22 Ultra"),
+            ("S23", "Galaxy S23"),
+            ("S23P", "Galaxy S23+"),
+            ("S23U", "Galaxy S23 Ultra"),
+            # Z Series (Foldables)
+            ("ZF4", "Galaxy Z Fold 4"),
+            ("ZF5", "Galaxy Z Fold 5"),
+            ("ZFL4", "Galaxy Z Flip 4"),
+            ("ZFL5", "Galaxy Z Flip 5")
         ],
         DeviceMakeEnum.APPLE: [
+            # iPhone 13 Series
             ("IP13", "iPhone 13"),
+            ("IP13M", "iPhone 13 mini"),
+            ("IP13P", "iPhone 13 Pro"),
+            ("IP13PM", "iPhone 13 Pro Max"),
+            # iPhone 14 Series
             ("IP14", "iPhone 14"),
-            ("IP15", "iPhone 15")
+            ("IP14P", "iPhone 14 Plus"),
+            ("IP14PR", "iPhone 14 Pro"),
+            ("IP14PM", "iPhone 14 Pro Max"),
+            # iPhone 15 Series
+            ("IP15", "iPhone 15"),
+            ("IP15P", "iPhone 15 Plus"),
+            ("IP15PR", "iPhone 15 Pro"),
+            ("IP15PM", "iPhone 15 Pro Max")
         ],
         DeviceMakeEnum.HUAWEI: [
             ("P40", "P40 Pro"),
