@@ -49,30 +49,16 @@ class DeviceModelEnum:
             ("ZFL5", "Galaxy Z Flip 5")
         ],
         DeviceMakeEnum.APPLE: [
-            # iPhone 15 Series (Latest)
-            ("IP15", "iPhone 15"),
-            ("IP15P", "iPhone 15 Plus"),
+            # Latest iPhone Models
+            ("IP15PM", "iPhone 15 Pro Max"),  # Latest flagship
             ("IP15PR", "iPhone 15 Pro"),
-            ("IP15PM", "iPhone 15 Pro Max"),
-            # iPhone 14 Series
-            ("IP14", "iPhone 14"),
-            ("IP14P", "iPhone 14 Plus"),
-            ("IP14PR", "iPhone 14 Pro"),
+            ("IP15P", "iPhone 15 Plus"),
+            ("IP15", "iPhone 15"),
+            # Previous Generation
             ("IP14PM", "iPhone 14 Pro Max"),
-            # iPhone 13 Series
-            ("IP13", "iPhone 13"),
-            ("IP13P", "iPhone 13 Pro"),
-            ("IP13PM", "iPhone 13 Pro Max"),
-            # iPhone 12 Series
-            ("IP12", "iPhone 12"),
-            ("IP12P", "iPhone 12 Pro"),
-            ("IP12PM", "iPhone 12 Pro Max"),
-            # iPad Pro Series
-            ("IPD11", "iPad Pro 11-inch"),
-            ("IPD129", "iPad Pro 12.9-inch"),
-            # iPad Air
-            ("IPDA5", "iPad Air (5th gen)"),
-            ("IPDA4", "iPad Air (4th gen)")
+            ("IP14PR", "iPhone 14 Pro"),
+            ("IP14P", "iPhone 14 Plus"),
+            ("IP14", "iPhone 14")
         ],
         DeviceMakeEnum.HUAWEI: [
             ("P40", "P40 Pro"),
