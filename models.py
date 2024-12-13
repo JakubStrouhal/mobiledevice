@@ -58,7 +58,9 @@ class DeviceModelEnum:
             ("IP14PM", "iPhone 14 Pro Max"),
             ("IP14PR", "iPhone 14 Pro"),
             ("IP14P", "iPhone 14 Plus"),
-            ("IP14", "iPhone 14")
+            ("IP14", "iPhone 14"),
+            ("IP13PM", "iPhone 13 Pro Max"),
+            ("IP13PR", "iPhone 13 Pro")
         ],
         DeviceMakeEnum.HUAWEI: [
             ("P40", "P40 Pro"),
