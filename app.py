@@ -30,10 +30,10 @@ def create_app():
     app = Flask(__name__)
     
     # Configuration
-    if os.environ.get('FLASK_ENV') == 'production':
-        app.config.from_object('config.ProductionConfig')
-    else:
-        app.config.from_object('config.Config')
+    # Always use production config for deployment
+    app.config.from_object('config.ProductionConfig')
+    # Ensure debug mode is disabled
+    app.debug = False
         
     # Add security headers in production
     @app.after_request
@@ -119,4 +119,5 @@ def register_blueprints(app):
 register_blueprints(app)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Production settings: debug disabled, threaded enabled
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)
