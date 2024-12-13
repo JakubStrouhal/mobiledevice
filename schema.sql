@@ -21,7 +21,7 @@ CREATE TABLE phones (
     model_id INTEGER NOT NULL REFERENCES device_model(id),
     serial_number VARCHAR(100) UNIQUE NOT NULL,
     buying_price DECIMAL(10,2),
-    state VARCHAR(20) DEFAULT 'active',  -- active, inactive, maintenance
+    status VARCHAR(20) NOT NULL DEFAULT 'INSTOCK',  -- INSTOCK, ISSUED, TERMINATED
     note TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

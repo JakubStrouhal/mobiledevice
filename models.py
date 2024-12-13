@@ -20,6 +20,13 @@ class DeviceModel(db.Model):
     phones = db.relationship('Phone', backref='model', lazy=True)
     __table_args__ = (db.UniqueConstraint('make_id', 'code', name='uq_model_make_code'),)
 
+from enum import Enum
+
+class PhoneStatus(str, Enum):
+    INSTOCK = "INSTOCK"
+    ISSUED = "ISSUED"
+    TERMINATED = "TERMINATED"
+
 class Phone(db.Model):
     """Phones inventory"""
     __tablename__ = 'phones'
@@ -28,7 +35,7 @@ class Phone(db.Model):
     model_id = db.Column(db.Integer, db.ForeignKey('device_model.id'), nullable=False)
     serial_number = db.Column(db.String(100), unique=True, nullable=False)
     buying_price = db.Column(db.Numeric(10, 2))
-    state = db.Column(db.String(20), default='active')  # active, inactive, maintenance
+    status = db.Column(db.String(20), nullable=False, default=PhoneStatus.INSTOCK.value)
     note = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     assignments = db.relationship('PhoneAssignment', backref='phone', lazy=True)
