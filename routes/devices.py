@@ -144,17 +144,17 @@ def employee_new():
         current_app.logger.debug(f"Form data received: {request.form}")
         if form.validate_on_submit():
             try:
-                # Create new employee instance
-                employee = User()
-                # Update employee attributes from form data
-                employee.employee_id = form.employee_id.data
-                employee.first_name = form.first_name.data
-                employee.last_name = form.last_name.data
-                employee.email = form.email.data
-                employee.position = form.position.data
-                employee.country = form.country.data
-                employee.state = form.state.data
-                employee.entry_date = form.entry_date.data
+                # Create new employee instance with form data
+                employee = User(
+                    employee_id=form.employee_id.data,
+                    first_name=form.first_name.data,
+                    last_name=form.last_name.data,
+                    email=form.email.data,
+                    position=form.position.data,
+                    country=form.country.data,
+                    state=form.state.data,
+                    entry_date=form.entry_date.data
+                )
 
                 current_app.logger.debug(f"Creating new employee: {employee.first_name} {employee.last_name}")
                 
