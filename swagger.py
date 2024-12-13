@@ -1,6 +1,7 @@
 from flask import jsonify
 
 def swagger_config():
+    """Generate OpenAPI/Swagger configuration"""
     return {
         "swagger": "2.0",
         "info": {
@@ -9,30 +10,7 @@ def swagger_config():
             "version": "1.0.0"
         },
         "basePath": "/",
-        "schemes": [
-            "http",
-            "https"
-        ],
-        "definitions": {
-            "Employee": {
-                "type": "object",
-                "required": ["employee_id", "first_name", "last_name", "email", "entry_date"],
-                "properties": {
-                    "employee_id": {"type": "string", "description": "Unique employee identifier"},
-                    "first_name": {"type": "string"},
-                    "last_name": {"type": "string"},
-                    "email": {"type": "string", "format": "email"},
-                    "position": {"type": "string"},
-                    "country": {"type": "string", "default": "CZ"},
-                    "state": {
-                        "type": "string",
-                        "enum": ["active", "maternity_leave", "inactive"],
-                        "default": "active"
-                    },
-                    "entry_date": {"type": "string", "format": "date"}
-                }
-            }
-        },
+        "schemes": ["http", "https"],
         "paths": {
             "/devices": {
                 "get": {
@@ -184,26 +162,26 @@ def swagger_config():
                         {
                             "name": "employee_id",
                             "in": "formData",
-                            "required": true,
+                            "required": True,
                             "type": "string",
                             "description": "Unique employee identifier"
                         },
                         {
                             "name": "first_name",
                             "in": "formData",
-                            "required": true,
+                            "required": True,
                             "type": "string"
                         },
                         {
                             "name": "last_name",
                             "in": "formData",
-                            "required": true,
+                            "required": True,
                             "type": "string"
                         },
                         {
                             "name": "email",
                             "in": "formData",
-                            "required": true,
+                            "required": True,
                             "type": "string",
                             "format": "email"
                         },
@@ -228,7 +206,7 @@ def swagger_config():
                         {
                             "name": "entry_date",
                             "in": "formData",
-                            "required": true,
+                            "required": True,
                             "type": "string",
                             "format": "date"
                         }
