@@ -49,6 +49,11 @@ class DeviceModelEnum:
             ("ZFL5", "Galaxy Z Flip 5")
         ],
         DeviceMakeEnum.APPLE: [
+            # iPhone 12 Series
+            ("IP12", "iPhone 12"),
+            ("IP12M", "iPhone 12 mini"),
+            ("IP12P", "iPhone 12 Pro"),
+            ("IP12PM", "iPhone 12 Pro Max"),
             # iPhone 13 Series
             ("IP13", "iPhone 13"),
             ("IP13M", "iPhone 13 mini"),
@@ -63,7 +68,16 @@ class DeviceModelEnum:
             ("IP15", "iPhone 15"),
             ("IP15P", "iPhone 15 Plus"),
             ("IP15PR", "iPhone 15 Pro"),
-            ("IP15PM", "iPhone 15 Pro Max")
+            ("IP15PM", "iPhone 15 Pro Max"),
+            # iPhone SE Series
+            ("IPSE2", "iPhone SE (2nd gen)"),
+            ("IPSE3", "iPhone SE (3rd gen)"),
+            # iPad Pro Series
+            ("IPD11", "iPad Pro 11-inch"),
+            ("IPD129", "iPad Pro 12.9-inch"),
+            # iPad Air
+            ("IPDA5", "iPad Air (5th gen)"),
+            ("IPDA4", "iPad Air (4th gen)")
         ],
         DeviceMakeEnum.HUAWEI: [
             ("P40", "P40 Pro"),
