@@ -4,7 +4,7 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
 from swagger import swagger_config
-from sqlalchemy import text
+from sqlalchemy import text as sqlalchemy_text
 from extensions import db
 
 logging.basicConfig(level=logging.DEBUG)
@@ -75,7 +75,7 @@ def create_app():
             with db.engine.connect() as conn:
                 tables = ['users', 'phones', 'device_make', 'device_model', 'phone_assignments']
                 for table in tables:
-                    result = conn.execute(text(f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table}')"))
+                    result = conn.execute(sqlalchemy_text(f"SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = '{table}')"))
                     exists = result.scalar()
                     if exists:
                         logging.info(f"Table '{table}' exists")

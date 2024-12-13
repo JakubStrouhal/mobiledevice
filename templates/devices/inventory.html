@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="me-4">Device Inventory Report</h2>
+        <div class="btn-group">
+            <a href="{{ url_for('devices.list_devices') }}" class="btn btn-outline-secondary">
+                <i data-feather="list"></i> Back to List
+            </a>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i data-feather="printer"></i> Print Report
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Device Status Summary -->
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Device Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for status, count in status_summary.items() %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ status }}
+                            <span class="badge bg-primary rounded-pill">{{ count }}</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Make/Model Distribution -->
+        <div class="col-md-8 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Device Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Make</th>
+                                <th>Model</th>
+                                <th>Total</th>
+                                <th>In Stock</th>
+                                <th>Issued</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for make, models in device_distribution.items() %}
+                                {% for model, counts in models.items() %}
+                                <tr>
+                                    <td>{{ make }}</td>
+                                    <td>{{ model }}</td>
+                                    <td>{{ counts.total }}</td>
+                                    <td>{{ counts.instock }}</td>
+                                    <td>{{ counts.issued }}</td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Assignments -->
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Recent Assignments</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Device</th>
+                                <th>Employee</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in recent_assignments %}
+                            <tr>
+                                <td>{{ assignment.assigned_date.strftime('%d.%m.%Y') }}</td>
+                                <td>{{ assignment.phone.make.text }} {{ assignment.phone.model.text }}</td>
+                                <td>{{ assignment.user.first_name }} {{ assignment.user.last_name }}</td>
+                                <td>
+                                    {% if assignment.returned_date %}
+                                        <span class="badge bg-secondary">Returned</span>
+                                    {% else %}
+                                        <span class="badge bg-success">Active</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

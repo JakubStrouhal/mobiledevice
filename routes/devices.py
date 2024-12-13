@@ -1,9 +1,10 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
-from flask import current_app
-from sqlalchemy import text
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify, current_app
+from sqlalchemy import and_, text
+from sqlalchemy.sql import text as sqlalchemy_text
 from models import (
     Phone, DeviceMake, DeviceModel, PhoneStatus,
-    User, PhoneAssignment, PhoneSimAssignment
+    User, PhoneAssignment, PhoneSimAssignment,
+    DeviceMakeEnum, DeviceModelEnum
 )
 from forms import PhoneForm, EmployeeForm
 from extensions import db
@@ -17,59 +18,69 @@ def list_devices():
         # Get status filter from query params, default to showing only active
         show_inactive = request.args.get('show_inactive', '0') == '1'
         
-        # Query users based on active status filter
-        query = User.query
+        # Base query for users with ordered results
+        users_query = User.query.order_by(User.last_name, User.first_name)
+
+        # Filter active users unless show_inactive is True
         if not show_inactive:
-            query = query.filter(User.state == 'active')
-        users = query.all()
+            users_query = users_query.filter(User.state == 'active')
+
+        # Get users with prefetched assignments
+        users = users_query.all()
         
         current_app.logger.info(f"Retrieved {len(users)} users (show_inactive={show_inactive})")
 
-        # Get devices and counts for each user
+        # Calculate device and SIM counts for each user
         for user in users:
-            # Get device count
             user.phone_count = PhoneAssignment.query.filter(
                 PhoneAssignment.user_id == user.id,
                 PhoneAssignment.returned_date.is_(None)
             ).count()
             
-            # Get SIM count
             user.sim_count = PhoneSimAssignment.query.filter(
                 PhoneSimAssignment.user_id == user.id,
                 PhoneSimAssignment.returned_date.is_(None)
             ).count()
 
-    # Get all devices for the view
-    devices = Phone.query.all()
+        # Get all devices
+        devices = Phone.query.all()
 
-    # Keep existing user data for context panel (using the first user for simplicity)
-    user_devices = []
-    device_count = 0
-    sim_count = 0
-    if users:
-        user = users[0] # Using the first user for context panel
-        user_devices = Phone.query\
-            .join(PhoneAssignment)\
-            .filter(
-                PhoneAssignment.user_id == user.id,
-                PhoneAssignment.returned_date.is_(None)
+        # Initialize context panel data
+        context_user = users[0] if users else None
+        user_devices = []
+        device_count = 0
+        sim_count = 0
+
+        if context_user:
+            # Get active devices for the context user
+            user_devices = Phone.query.join(PhoneAssignment).filter(
+                and_(
+                    PhoneAssignment.user_id == context_user.id,
+                    PhoneAssignment.returned_date.is_(None)
+                )
             ).all()
-        device_count = len(user_devices)
-        sim_count = PhoneSimAssignment.query.filter(
-            PhoneSimAssignment.user_id == user.id,
-            PhoneSimAssignment.returned_date.is_(None)
-        ).count()
-    else:
-        user = None
+            
+            device_count = len(user_devices)
+            sim_count = PhoneSimAssignment.query.filter(
+                and_(
+                    PhoneSimAssignment.user_id == context_user.id,
+                    PhoneSimAssignment.returned_date.is_(None)
+                )
+            ).count()
 
-    return render_template('devices/list.html',
-                         devices=devices,
-                         users=users, # Changed from employees
-                         user=user,
-                         user_devices=user_devices,
-                         device_count=device_count,
-                         sim_count=sim_count,
-                         show_inactive=show_inactive)
+        return render_template('devices/list.html',
+                            devices=devices,
+                            employees=users,
+                            user=context_user,
+                            user_devices=user_devices,
+                            device_count=device_count,
+                            sim_count=sim_count,
+                            show_inactive=show_inactive)
+
+    except Exception as e:
+        current_app.logger.error(f"Error in list_devices: {str(e)}")
+        flash('Error retrieving device list', 'error')
+        return render_template('errors/500.html'), 500
 
 @devices.route('/<int:id>')
 def device_detail(id):
@@ -213,17 +224,75 @@ def employee_new():
 
     return render_template('devices/employee_new.html', form=form)
 
+@devices.route('/inventory')
+def inventory_report():
+    """Generate device inventory report."""
+    try:
+        # Get status summary
+        status_summary = db.session.query(
+            Phone.status,
+            db.func.count(Phone.id)
+        ).group_by(Phone.status).all()
+        status_summary = dict(status_summary)
+
+        # Get device distribution by make/model
+        device_distribution = {}
+        phones = Phone.query.all()
+        for phone in phones:
+            make = phone.make.text
+            model = phone.model.text
+            
+            if make not in device_distribution:
+                device_distribution[make] = {}
+            
+            if model not in device_distribution[make]:
+                device_distribution[make][model] = {
+                    'total': 0,
+                    'instock': 0,
+                    'issued': 0
+                }
+            
+            device_distribution[make][model]['total'] += 1
+            if phone.status == PhoneStatus.INSTOCK.value:
+                device_distribution[make][model]['instock'] += 1
+            elif phone.status == PhoneStatus.ISSUED.value:
+                device_distribution[make][model]['issued'] += 1
+
+        # Get recent assignments
+        recent_assignments = PhoneAssignment.query\
+            .order_by(PhoneAssignment.assigned_date.desc())\
+            .limit(10)\
+            .all()
+
+        return render_template('devices/inventory.html',
+                            status_summary=status_summary,
+                            device_distribution=device_distribution,
+                            recent_assignments=recent_assignments)
+
+    except Exception as e:
+        current_app.logger.error(f"Error generating inventory report: {str(e)}")
+        flash('Error generating inventory report', 'error')
+        return render_template('errors/500.html'), 500
+
 @devices.route('/employee/<int:id>/toggle-status', methods=['POST'])
 def employee_toggle_status(id):
     """Toggle employee's active/inactive status."""
     try:
         user = User.query.get_or_404(id)
+        # Toggle between active and inactive states
         user.state = 'inactive' if user.state == 'active' else 'active'
         db.session.commit()
+        
+        # Get the current show_inactive parameter from the request
+        show_inactive = request.args.get('show_inactive', '0')
+        
         flash(f'Employee status updated to {user.state}', 'success')
+        current_app.logger.info(f"Employee {user.employee_id} status updated to {user.state}")
+        
+        # Redirect back to the list view with the same filter state
+        return redirect(url_for('devices.list_devices', show_inactive=show_inactive))
     except Exception as e:
         current_app.logger.error(f"Error updating employee status: {str(e)}")
         flash('Error updating employee status', 'error')
         db.session.rollback()
-
-    return redirect(url_for('devices.list_devices'))
+        return redirect(url_for('devices.list_devices'))
