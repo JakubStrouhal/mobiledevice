@@ -139,18 +139,23 @@ def get_models(make):
 
 @devices.route('/employee/new', methods=['GET', 'POST'])
 def employee_new():
+    """Create a new employee endpoint.
+    
+    GET: Display the employee creation form
+    POST: Handle form submission and create new employee
+    """
     form = EmployeeForm()
     if request.method == 'POST':
+        current_app.logger.info("Processing employee creation form submission")
         current_app.logger.debug(f"Form data received: {request.form}")
-        current_app.logger.debug(f"Form CSRF token valid: {form.csrf_token.current_token}")
         
         if not form.validate():
-            current_app.logger.error("Form validation failed")
+            current_app.logger.warning("Form validation failed")
             for field, errors in form.errors.items():
                 for error in errors:
                     current_app.logger.error(f"Validation error - {field}: {error}")
                     flash(f'{field}: {error}', 'error')
-            return render_template('devices/employee_new.html', form=form)
+            return render_template('devices/employee_new.html', form=form), 400
         
         try:
             # Create new employee instance with form data
@@ -159,30 +164,31 @@ def employee_new():
                 first_name=form.first_name.data,
                 last_name=form.last_name.data,
                 email=form.email.data,
-                position=form.position.data,
-                country=form.country.data,
-                state=form.state.data,
+                position=form.position.data or None,  # Handle optional fields
+                country=form.country.data or 'CZ',   # Default to CZ if not provided
+                state=form.state.data or 'active',   # Default to active if not provided
                 entry_date=form.entry_date.data
             )
 
-            current_app.logger.debug(f"Creating new employee: {employee.first_name} {employee.last_name}")
+            current_app.logger.info(f"Creating new employee: {employee.first_name} {employee.last_name}")
             current_app.logger.debug(f"Employee data: {vars(employee)}")
             
             # Add and commit to database
             db.session.add(employee)
-            try:
-                db.session.commit()
-                current_app.logger.info(f"Successfully created employee with ID: {employee.id}")
-                flash('New employee added successfully', 'success')
-                return redirect(url_for('devices.list_devices'))
-            except Exception as commit_error:
-                db.session.rollback()
-                current_app.logger.error(f"Database commit error: {str(commit_error)}")
-                flash(f'Error saving employee: {str(commit_error)}', 'error')
-                
+            db.session.commit()
+            
+            current_app.logger.info(f"Successfully created employee with ID: {employee.id}")
+            flash('New employee added successfully', 'success')
+            return redirect(url_for('devices.list_devices'))
+            
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f"Error creating new employee: {str(e)}")
-            flash(f'Error creating new employee: {str(e)}', 'error')
+            # Provide more user-friendly error message
+            if 'duplicate key' in str(e):
+                flash('An employee with this ID already exists', 'error')
+            else:
+                flash('Error creating employee. Please try again.', 'error')
+            return render_template('devices/employee_new.html', form=form), 400
     
     return render_template('devices/employee_new.html', form=form)

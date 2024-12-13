@@ -5,7 +5,7 @@ def swagger_config():
         "swagger": "2.0",
         "info": {
             "title": "Phone Management System API",
-            "description": "API for managing mobile phones and device assignments",
+            "description": "API for managing mobile phones, device assignments and employees",
             "version": "1.0.0"
         },
         "basePath": "/",
@@ -13,6 +13,26 @@ def swagger_config():
             "http",
             "https"
         ],
+        "definitions": {
+            "Employee": {
+                "type": "object",
+                "required": ["employee_id", "first_name", "last_name", "email", "entry_date"],
+                "properties": {
+                    "employee_id": {"type": "string", "description": "Unique employee identifier"},
+                    "first_name": {"type": "string"},
+                    "last_name": {"type": "string"},
+                    "email": {"type": "string", "format": "email"},
+                    "position": {"type": "string"},
+                    "country": {"type": "string", "default": "CZ"},
+                    "state": {
+                        "type": "string",
+                        "enum": ["active", "maternity_leave", "inactive"],
+                        "default": "active"
+                    },
+                    "entry_date": {"type": "string", "format": "date"}
+                }
+            }
+        },
         "paths": {
             "/devices": {
                 "get": {
@@ -142,6 +162,83 @@ def swagger_config():
                         },
                         "404": {
                             "description": "Assignment not found"
+                        }
+                    }
+                }
+            },
+            "/devices/employee/new": {
+                "get": {
+                    "tags": ["Employees"],
+                    "summary": "Get employee creation form",
+                    "responses": {
+                        "200": {
+                            "description": "Employee creation form"
+                        }
+                    }
+                },
+                "post": {
+                    "tags": ["Employees"],
+                    "summary": "Create a new employee",
+                    "consumes": ["application/x-www-form-urlencoded"],
+                    "parameters": [
+                        {
+                            "name": "employee_id",
+                            "in": "formData",
+                            "required": true,
+                            "type": "string",
+                            "description": "Unique employee identifier"
+                        },
+                        {
+                            "name": "first_name",
+                            "in": "formData",
+                            "required": true,
+                            "type": "string"
+                        },
+                        {
+                            "name": "last_name",
+                            "in": "formData",
+                            "required": true,
+                            "type": "string"
+                        },
+                        {
+                            "name": "email",
+                            "in": "formData",
+                            "required": true,
+                            "type": "string",
+                            "format": "email"
+                        },
+                        {
+                            "name": "position",
+                            "in": "formData",
+                            "type": "string"
+                        },
+                        {
+                            "name": "country",
+                            "in": "formData",
+                            "type": "string",
+                            "default": "CZ"
+                        },
+                        {
+                            "name": "state",
+                            "in": "formData",
+                            "type": "string",
+                            "enum": ["active", "maternity_leave", "inactive"],
+                            "default": "active"
+                        },
+                        {
+                            "name": "entry_date",
+                            "in": "formData",
+                            "required": true,
+                            "type": "string",
+                            "format": "date"
+                        }
+                    ],
+                    "responses": {
+                        "302": {
+                            "description": "Redirect to devices list on success"
+                        },
+                        "400": {
+                            "description": "Validation error"
                         }
                     }
                 }
