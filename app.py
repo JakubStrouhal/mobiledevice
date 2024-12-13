@@ -1,5 +1,6 @@
 import os
 import logging
+from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
@@ -7,7 +8,18 @@ from swagger import swagger_config
 from sqlalchemy import text as sqlalchemy_text
 from extensions import db
 
-logging.basicConfig(level=logging.DEBUG)
+# Configure logging
+if os.environ.get('FLASK_ENV') == 'production':
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]',
+        handlers=[
+            RotatingFileHandler('app.log', maxBytes=10000000, backupCount=10),
+            logging.StreamHandler()
+        ]
+    )
+else:
+    logging.basicConfig(level=logging.DEBUG)
 
 babel = Babel()
 
