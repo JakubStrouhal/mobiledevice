@@ -177,21 +177,51 @@
 
         <div class="mb-3">
             <label class="form-label">Make</label>
-            <select class="form-select" name="make">
-                {% for make in makes %}
-                <option value="{{ make.code }}">{{ make.text }}</option>
+            <select class="form-select" name="make" id="deviceMake" onchange="updateModels(this.value)">
+                <option value="">Select Make</option>
+                {% for code, name in makes %}
+                <option value="{{ name }}">{{ name }}</option>
                 {% endfor %}
             </select>
         </div>
 
         <div class="mb-3">
             <label class="form-label">Model</label>
-            <select class="form-select" name="model">
-                {% for model in models %}
-                <option value="{{ model.code }}">{{ model.text }}</option>
-                {% endfor %}
+            <select class="form-select" name="model" id="deviceModel" disabled>
+                <option value="">Select Model</option>
             </select>
         </div>
+
+        <script>
+        function updateModels(make) {
+            const modelSelect = document.getElementById('deviceModel');
+            
+            if (!make) {
+                modelSelect.disabled = true;
+                modelSelect.innerHTML = '<option value="">Select Model</option>';
+                return;
+            }
+            
+            // Fetch models for selected make
+            fetch(`/devices/models/${make}`)
+                .then(response => response.json())
+                .then(models => {
+                    modelSelect.innerHTML = '<option value="">Select Model</option>';
+                    models.forEach(model => {
+                        const option = document.createElement('option');
+                        option.value = model.value;
+                        option.textContent = model.label;
+                        modelSelect.appendChild(option);
+                    });
+                    modelSelect.disabled = false;
+                })
+                .catch(error => {
+                    console.error('Error loading models:', error);
+                    modelSelect.disabled = true;
+                    modelSelect.innerHTML = '<option value="">Error loading models</option>';
+                });
+        }
+        </script>
 
         <div class="mb-3">
             <label class="form-label">Serial number</label>

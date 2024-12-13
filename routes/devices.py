@@ -15,6 +15,11 @@ devices = Blueprint('devices', __name__)
 @devices.route('/')
 def list_devices():
     try:
+        # Get device makes and initial models for the form
+        makes = [(make.name, make.value) for make in DeviceMakeEnum]
+        initial_make = DeviceMakeEnum.SAMSUNG
+        models = DeviceModelEnum.get_models_for_make(initial_make)
+        
         # Get status filter from query params, default to showing only active
         show_inactive = request.args.get('show_inactive', '0') == '1'
         
@@ -75,7 +80,9 @@ def list_devices():
                             user_devices=user_devices,
                             device_count=device_count,
                             sim_count=sim_count,
-                            show_inactive=show_inactive)
+                            show_inactive=show_inactive,
+                            makes=makes,
+                            models=models)
 
     except Exception as e:
         current_app.logger.error(f"Error in list_devices: {str(e)}")
@@ -161,11 +168,31 @@ def device_new():
 @devices.route('/models/<make>')
 def get_models(make):
     try:
-        make_enum = DeviceMakeEnum(make)
+        # Debug log for incoming request
+        current_app.logger.debug(f"Getting models for make: {make}")
+        
+        # Convert the make parameter to enum value
+        make_enum = None
+        for enum_member in DeviceMakeEnum:
+            if enum_member.value.lower() == make.lower():
+                make_enum = enum_member
+                break
+        
+        if not make_enum:
+            current_app.logger.warning(f"Make not found: {make}")
+            return jsonify([]), 404
+            
+        # Get models for the make
         models = DeviceModelEnum.get_models_for_make(make_enum)
-        return jsonify([(code, text) for code, text in models])
-    except ValueError:
-        return jsonify([]), 404
+        current_app.logger.info(f"Retrieved models for {make}: {models}")
+        
+        # Return models as a list of dictionaries with value and label
+        model_list = [{"value": code, "label": text} for code, text in models]
+        return jsonify(model_list)
+        
+    except Exception as e:
+        current_app.logger.error(f"Error getting models for make {make}: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 
 @devices.route('/employee/new', methods=['GET', 'POST'])
