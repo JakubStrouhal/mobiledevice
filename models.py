@@ -11,6 +11,16 @@ class DeviceMakeEnum(str, Enum):
     MOTOROLA = "Motorola"
     NOKIA = "Nokia"
 
+class DealerEnum(str, Enum):
+    ALZA = "Alza"
+    DATART = "Datart"
+    MALL = "Mall"
+    CZC = "CZC"
+    TSBOHEMIA = "TS Bohemia"
+    O2 = "O2"
+    VODAFONE = "Vodafone"
+    TMOBILE = "T-Mobile"
+
 class DeviceModelEnum:
     MODELS = {
         DeviceMakeEnum.SAMSUNG: [
@@ -72,6 +82,8 @@ class Phone(db.Model):
     serial_number = db.Column(db.String(100), unique=True, nullable=False)
     buying_price = db.Column(db.Numeric(10, 2))
     status = db.Column(db.String(20), nullable=False, default=PhoneStatus.INSTOCK.value)
+    dealer = db.Column(db.String(50))  # Will store DealerEnum values
+    purchased = db.Column(db.Date)
     note = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     assignments = db.relationship('PhoneAssignment', backref='phone', lazy=True)

@@ -76,6 +76,30 @@
                         </div>
 
                         <div class="mb-3">
+                            <label class="form-label">{{ form.dealer.label }}</label>
+                            {{ form.dealer(class="form-select") }}
+                            {% if form.dealer.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.dealer.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.purchased.label }}</label>
+                            {{ form.purchased(class="form-control", type="date") }}
+                            {% if form.purchased.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.purchased.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
                             <label class="form-label">{{ form.note.label }}</label>
                             {{ form.note(class="form-control", rows=3) }}
                             {% if form.note.errors %}

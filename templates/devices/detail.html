@@ -31,10 +31,13 @@
                     <dd class="col-sm-9">{{ device.serial_number }}</dd>
 
                     <dt class="col-sm-3">Cena</dt>
-                    <dd class="col-sm-9">{{ device.cost }} {{ device.currency }}</dd>
+                    <dd class="col-sm-9">{{ device.buying_price }}</dd>
+
+                    <dt class="col-sm-3">Dealer</dt>
+                    <dd class="col-sm-9">{{ device.dealer }}</dd>
 
                     <dt class="col-sm-3">Datum nákupu</dt>
-                    <dd class="col-sm-9">{{ device.date_of_purchase.strftime('%d.%m.%Y') }}</dd>
+                    <dd class="col-sm-9">{{ device.purchased.strftime('%d.%m.%Y') if device.purchased else '-' }}</dd>
 
                     <dt class="col-sm-3">V provozu od</dt>
                     <dd class="col-sm-9">{{ device.in_operation_from.strftime('%d.%m.%Y') }}</dd>
