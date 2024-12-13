@@ -1,49 +1,130 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-8">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h2>Zařízení</h2>
-            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#newDeviceModal">
-                <i data-feather="plus"></i> Nové zařízení
-            </button>
+<div class="container-fluid">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex align-items-center">
+            <h2 class="me-4">PHONE MOBILES & SIMS</h2>
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#"><i data-feather="users"></i> Employees</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i data-feather="smartphone"></i> Mobiles</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#"><i data-feather="sim"></i> SIM cards</a>
+                </li>
+            </ul>
         </div>
+        <div class="d-flex align-items-center">
+            <span class="text-muted">Phone Management System</span>
+        </div>
+    </div>
 
-        <div class="card">
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Typ</th>
-                            <th>Výrobce</th>
-                            <th>Model</th>
-                            <th>Sériové číslo</th>
-                            <th>Stav</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for device in devices %}
-                        <tr>
-                            <td>{{ device.device_type }}</td>
-                            <td>{{ device.make }}</td>
-                            <td>{{ device.model }}</td>
-                            <td>{{ device.serial_number }}</td>
-                            <td>
-                                <span class="badge bg-{{ 'success' if device.status == 'active' else 'secondary' }}">
-                                    {{ device.status }}
-                                </span>
-                            </td>
-                            <td>
-                                <a href="{{ url_for('device_detail', id=device.id) }}" class="btn btn-sm btn-outline-primary">
-                                    <i data-feather="info"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label">OSCIS</label>
+                    <input type="text" class="form-control" placeholder="Search...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Country</label>
+                    <input type="text" class="form-control" placeholder="Search...">
+                </div>
+                <div class="col-md-2">
+                    <label class="form-label">Status</label>
+                    <select class="form-select">
+                        <option value="">All</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Devices Table -->
+    <div class="card">
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>OSCIS</th>
+                        <th>Country</th>
+                        <th>Status</th>
+                        <th>Name</th>
+                        <th>Surname</th>
+                        <th>Phones</th>
+                        <th>SIMs</th>
+                        <th>Entry</th>
+                        <th>Exit</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for device in devices %}
+                    <tr>
+                        <td>{{ device.employee_id }}</td>
+                        <td>
+                            <img src="/static/images/flags/cz.svg" alt="CZ" width="24">
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ 'success' if device.status == 'ISSUED' else 'secondary' }}">
+                                {{ device.status }}
+                            </span>
+                        </td>
+                        <td>{{ device.user.first_name if device.user else '' }}</td>
+                        <td>{{ device.user.last_name if device.user else '' }}</td>
+                        <td>{{ device.phone_count }}</td>
+                        <td>{{ device.sim_count }}</td>
+                        <td>{{ device.entry_date.strftime('%d.%m.%Y') if device.entry_date else '' }}</td>
+                        <td>{{ device.exit_date.strftime('%d.%m.%Y') if device.exit_date else '' }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-icon btn-outline-primary" onclick="showDeviceDetails('{{ device.id }}')">
+                                <i data-feather="more-vertical"></i>
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Issue New Device Button -->
+    <div class="position-fixed bottom-0 end-0 p-4">
+        <button class="btn btn-primary rounded-circle shadow" data-bs-toggle="modal" data-bs-target="#issueDeviceModal">
+            <i data-feather="plus"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Issue Device Modal -->
+<div class="modal fade" id="issueDeviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Issue a new</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="text" class="form-control" placeholder="Zadejte sériové číslo...">
+                    <button class="btn btn-primary mt-2" id="searchSerial">
+                        <i data-feather="search"></i>
+                    </button>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Note</label>
+                    <textarea class="form-control" rows="3" placeholder="Lorem ipsum..."></textarea>
+                </div>
+                <button class="btn btn-primary w-100" id="issueOut">
+                    Issue out
+                </button>
             </div>
         </div>
     </div>

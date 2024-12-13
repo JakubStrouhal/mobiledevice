@@ -10,8 +10,29 @@ def index():
 
 @app.route('/devices')
 def device_list():
-    phones = Phone.query.all()
-    return render_template('devices/list.html', devices=phones)
+    # Get all assignments with related phone and user information
+    assignments = db.session.query(PhoneAssignment)\
+        .join(Phone)\
+        .join(User)\
+        .filter(PhoneAssignment.returned_date.is_(None))\
+        .all()
+    
+    # Process assignments into display format
+    devices = []
+    for assignment in assignments:
+        device = {
+            'id': assignment.phone.id,
+            'employee_id': assignment.user.employee_id,
+            'status': assignment.phone.status,
+            'user': assignment.user,
+            'phone_count': 1,  # This could be aggregated if needed
+            'sim_count': 0,    # This would need to be implemented
+            'entry_date': assignment.assigned_date,
+            'exit_date': assignment.returned_date
+        }
+        devices.append(device)
+    
+    return render_template('devices/list.html', devices=devices)
 
 @app.route('/devices/models/<make>')
 def device_models(make):
