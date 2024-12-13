@@ -332,19 +332,12 @@
 </div>
 <script>
 function updateFilters() {
-    const currentUrl = new URL(window.location.href);
-    const nameFilter = document.getElementById('nameFilter').value;
-    const surnameFilter = document.getElementById('surnameFilter').value;
-    const showInactive = currentUrl.searchParams.get('show_inactive') || '0';
-
-    // Update URL parameters
-    currentUrl.searchParams.set('show_inactive', showInactive);
-    if (nameFilter) currentUrl.searchParams.set('name', nameFilter);
-    else currentUrl.searchParams.delete('name');
-    if (surnameFilter) currentUrl.searchParams.set('surname', surnameFilter);
-    else currentUrl.searchParams.delete('surname');
-
-    window.location.href = currentUrl.toString();
+    const name = document.getElementById('nameFilter').value;
+    const surname = document.getElementById('surnameFilter').value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('name', name);
+    url.searchParams.set('surname', surname);
+    window.location.href = url.toString();
 }
 
 function updateStatusFilter(value) {
