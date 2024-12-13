@@ -146,5 +146,9 @@ def swagger_config():
                     }
                 }
             }
+        },
+        "externalDocs": {
+            "description": "Technical Documentation",
+            "url": "/documentation/technical"
         }
     }

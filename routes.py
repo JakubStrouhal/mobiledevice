@@ -89,3 +89,8 @@ def device_assign(id):
 def handover_protocol(assignment_id):
     assignment = PhoneAssignment.query.get_or_404(assignment_id)
     return render_template('protocols/handover.html', assignment=assignment)
+
+
+@app.route('/documentation/technical')
+def technical_documentation():
+    return render_template('documentation/technical.html')

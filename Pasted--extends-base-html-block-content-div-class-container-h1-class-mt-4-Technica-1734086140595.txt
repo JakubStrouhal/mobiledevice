@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <h1 class="mt-4">Technical Specification</h1>
+    
+    <h2>Overview</h2>
+    <p>The project is a Flask-based web application that manages devices, including device makes, models, and user assignments. This specification outlines the database schema, application architecture, endpoint definitions, and setup instructions.</p>
+
+    <h2>1. Database Schema</h2>
+    <h3>Device Manufacturer</h3>
+    <ul>
+        <li>ID: SERIAL PRIMARY KEY</li>
+        <li>Code: VARCHAR(20) NOT NULL UNIQUE</li>
+        <li>Text: VARCHAR(100) NOT NULL</li>
+    </ul>
+    <h3>Device Model</h3>
+    <ul>
+        <li>ID: SERIAL PRIMARY KEY</li>
+        <li>Code: VARCHAR(20) NOT NULL</li>
+        <li>Text: VARCHAR(100) NOT NULL</li>
+        <li>Make ID: INTEGER REFERENCES device_make(id)</li>
+    </ul>
+    <h3>Devices</h3>
+    <ul>
+        <li>ID: SERIAL PRIMARY KEY</li>
+        <li>Make ID: INTEGER REFERENCES device_make(id)</li>
+        <li>Model ID: INTEGER REFERENCES device_model(id)</li>
+        <li>Serial Number: VARCHAR(100) UNIQUE NOT NULL</li>
+        <li>Buying Price: DECIMAL(10,2)</li>
+        <li>State: VARCHAR(20) DEFAULT 'active'</li>
+        <li>Note: TEXT</li>
+    </ul>
+    <h3>Users</h3>
+    <ul>
+        <li>ID: SERIAL PRIMARY KEY</li>
+        <li>Employee ID: VARCHAR(20) UNIQUE NOT NULL</li>
+        <li>First Name: VARCHAR(100) NOT NULL</li>
+        <li>Last Name: VARCHAR(100) NOT NULL</li>
+        <li>Email: VARCHAR(120)</li>
+        <li>Position: VARCHAR(100)</li>
+        <li>State: VARCHAR(20) DEFAULT 'active'</li>
+    </ul>
+    <h3>Device Assignments</h3>
+    <ul>
+        <li>ID: SERIAL PRIMARY KEY</li>
+        <li>Device ID: INTEGER REFERENCES devices(id)</li>
+        <li>User ID: INTEGER REFERENCES users(id)</li>
+        <li>Assigned Date: DATE NOT NULL</li>
+        <li>Returned Date: DATE</li>
+        <li>Note: TEXT</li>
+        <li>Protocol Number: VARCHAR(50)</li>
+    </ul>
+
+    <h2>2. Application Architecture</h2>
+    <p>Flask Framework with SQLAlchemy for ORM operations, WTForms for handling user input, Jinja2 templating engine for dynamic HTML generation.</p>
+
+    <h2>3. Endpoints</h2>
+    <ul>
+        <li><code>GET /devices</code> - Lists all devices.</li>
+        <li><code>GET /devices/{id}</code> - Displays detailed information about a device.</li>
+        <li><code>GET /devices/models/{make}</code> - Retrieves models associated with a manufacturer.</li>
+        <li><code>GET /devices/{id}/edit</code> - Renders edit form for a specified device.</li>
+        <li><code>GET /devices/{id}/assign</code> - Renders assignment form for a specified device.</li>
+        <li><code>POST /devices/{id}/edit</code> - Handles submission of the edited device information.</li>
+        <li><code>POST /devices/{id}/assign</code> - Handles assignment of devices to users.</li>
+    </ul>
+
+    <h2>4. Application Setup Instructions</h2>
+    <ol>
+        <li>Install required packages: <code>pip install Flask Flask-SQLAlchemy Flask-WTF Flask-Babel</code></li>
+        <li>Database initialization: Create the database inside the application context.</li>
+        <li>Run the application: <code>python3 app.py</code></li>
+        <li>Bind to port 0.0.0.0 for external access: <code>app.run(host='0.0.0.0', port=8080)</code></li>
+    </ol>
+
+    <h2>5. Error Handling</h2>
+    <p>Implement error handlers for common HTTP errors (404, 500) as necessary.</p>
+</div>
+{% endblock %}
