@@ -160,15 +160,20 @@
 </div>
 
 <!-- Right Side Context Panel -->
-<div class="position-fixed end-0 top-0 h-100 bg-white border-start p-4" style="width: 400px;">
+<div id="contextPanel" class="position-fixed end-0 top-0 h-100 bg-white border-start p-4" style="width: 400px; transition: transform 0.3s ease-in-out;">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h4>{{ user.first_name }} {{ user.last_name }}</h4>
             <p class="text-muted mb-0">{{ user.position }}</p>
         </div>
-        <div class="badge bg-primary rounded-pill">
-            <i data-feather="smartphone"></i> {{ device_count }}
-            <i data-feather="credit-card"></i> {{ sim_count }}
+        <div>
+            <div class="badge bg-primary rounded-pill me-2">
+                <i data-feather="smartphone"></i> {{ device_count }}
+                <i data-feather="credit-card"></i> {{ sim_count }}
+            </div>
+            <button id="closeContextPanel" class="btn btn-sm btn-icon btn-outline-secondary">
+                <i data-feather="x"></i>
+            </button>
         </div>
     </div>
 
@@ -221,4 +226,34 @@
         <i data-feather="plus"></i> Issue a new
     </a>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const contextPanel = document.getElementById('contextPanel');
+    const closeButton = document.getElementById('closeContextPanel');
+    const toggleButton = document.createElement('button');
+    
+    // Create and add toggle button to show panel
+    toggleButton.className = 'btn btn-primary position-fixed end-0 top-0 mt-2 me-2 d-none';
+    toggleButton.innerHTML = '<i data-feather="chevron-left"></i>';
+    toggleButton.style.zIndex = '1050';
+    document.body.appendChild(toggleButton);
+
+    // Handle close button click
+    closeButton.addEventListener('click', function() {
+        contextPanel.style.transform = 'translateX(100%)';
+        toggleButton.classList.remove('d-none');
+    });
+
+    // Handle toggle button click
+    toggleButton.addEventListener('click', function() {
+        contextPanel.style.transform = 'translateX(0)';
+        toggleButton.classList.add('d-none');
+    });
+
+    // Initialize feather icons for dynamically added button
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
+</script>
 {% endblock %}
