@@ -42,6 +42,33 @@ body {
     border-color: #004a92;
 }
 
+.btn-outline-secondary {
+    border-color: #E1E3E7;
+    color: var(--on-surface-variant);
+}
+
+.btn-outline-secondary.active {
+    background-color: #E1E3E7;
+    color: var(--on-surface-variant);
+    border-color: #E1E3E7;
+}
+
+.btn-group .btn-outline-secondary {
+    padding: 0.5rem;
+}
+
+.btn-group .btn-outline-secondary .feather {
+    width: 20px;
+    height: 20px;
+}
+
+.employee-status-filter {
+    background-color: var(--surface-container-lowest);
+    border: 1px solid #E1E3E7;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+}
+
 .table th {
     border-top: none;
     color: var(--on-surface-variant);
