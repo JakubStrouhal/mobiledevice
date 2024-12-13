@@ -1,11 +1,15 @@
 :root {
-    --primary-color: #0066CC;
-    --secondary-color: #6C757D;
+    --primary-color: #005DB8;
+    --inverse-on-surface: #E9F1FF;
+    --inverse-surface: #29313C;
+    --on-surface-variant: #414754;
+    --surface-container-lowest: #FFFFFF;
 }
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background-color: #F8F9FA;
+    background-color: var(--inverse-on-surface);
+    color: var(--on-surface-variant);
 }
 
 .navbar {
@@ -23,23 +27,26 @@ body {
 .card {
     border-radius: 8px;
     border: none;
+    background-color: var(--surface-container-lowest);
     box-shadow: 0 2px 4px rgba(0,0,0,.05);
 }
 
 .btn-primary {
     background-color: var(--primary-color);
     border-color: var(--primary-color);
+    color: var(--inverse-on-surface);
 }
 
 .btn-primary:hover {
-    background-color: #0052A3;
-    border-color: #0052A3;
+    background-color: #004a92;
+    border-color: #004a92;
 }
 
 .table th {
     border-top: none;
-    color: var(--secondary-color);
+    color: var(--on-surface-variant);
     font-weight: 500;
+    background-color: var(--surface-container-lowest);
 }
 
 .badge {
