@@ -110,3 +110,37 @@ body {
     text-decoration-skip-ink: none;
     text-underline-position: from-font;
 }
+
+/* Navigation buttons styling */
+.btn-primary {
+    background-color: #0D6EFD;
+    border-color: #0D6EFD;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.btn-outline-secondary {
+    border-color: #CED4DA;
+    color: #6C757D;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 20px;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #F8F9FA;
+    border-color: #CED4DA;
+    color: #6C757D;
+}
+
+.btn i {
+    stroke-width: 2px;
+    width: 16px;
+    height: 16px;
+}
