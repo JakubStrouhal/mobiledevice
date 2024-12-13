@@ -91,9 +91,23 @@ def device_new():
     if form.validate_on_submit():
         device = Phone()
         form.populate_obj(device)
+        # Get the make and model IDs from the database
+        make = DeviceMake.query.filter_by(code=form.make.data).first()
+        model = DeviceModel.query.filter_by(code=form.model.data, make_id=make.id).first()
+        device.make_id = make.id
+        device.model_id = model.id
         db.session.add(device)
         db.session.commit()
         flash('New device added successfully', 'success')
         return redirect(url_for('devices.device_detail', id=device.id))
         
     return render_template('devices/edit.html', form=form)
+
+@devices.route('/models/<make>')
+def get_models(make):
+    try:
+        make_enum = DeviceMakeEnum(make)
+        models = DeviceModelEnum.get_models_for_make(make_enum)
+        return jsonify([(code, text) for code, text in models])
+    except ValueError:
+        return jsonify([]), 404

@@ -6,71 +6,93 @@
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <h3 class="mb-0">Editace</h3>
-                    <div>{{ device.make }} {{ device.model }}</div>
+                    <h3 class="mb-0">Edit Device</h3>
+                    {% if device %}
+                    <div>{{ device.make.text }} {{ device.model.text }}</div>
+                    {% endif %}
                 </div>
                 <div class="card-body">
                     <form method="POST" class="needs-validation" novalidate>
                         {{ form.csrf_token }}
                         
                         <div class="mb-3">
-                            <label class="form-label">{{ form.device_type.label }}</label>
-                            {{ form.device_type(class="form-select") }}
-                        </div>
-
-                        <div class="mb-3">
                             <label class="form-label">{{ form.make.label }}</label>
-                            <div class="input-group">
-                                {{ form.make(class="form-control") }}
-                                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#makeModal">
-                                    <i data-feather="list"></i>
-                                </button>
+                            {{ form.make(class="form-select") }}
+                            {% if form.make.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.make.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">{{ form.model.label }}</label>
-                            {{ form.model(class="form-control") }}
+                            {{ form.model(class="form-select") }}
+                            {% if form.model.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.model.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">{{ form.serial_number.label }}</label>
                             {{ form.serial_number(class="form-control") }}
+                            {% if form.serial_number.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.serial_number.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">{{ form.cost.label }}</label>
-                                {{ form.cost(class="form-control") }}
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.buying_price.label }}</label>
+                            {{ form.buying_price(class="form-control") }}
+                            {% if form.buying_price.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.buying_price.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            <div class="col">
-                                <label class="form-label">{{ form.currency.label }}</label>
-                                {{ form.currency(class="form-select") }}
-                            </div>
+                            {% endif %}
                         </div>
 
-                        <div class="row mb-3">
-                            <div class="col">
-                                <label class="form-label">{{ form.date_of_purchase.label }}</label>
-                                {{ form.date_of_purchase(class="form-control", type="date") }}
+                        <div class="mb-3">
+                            <label class="form-label">{{ form.status.label }}</label>
+                            {{ form.status(class="form-select") }}
+                            {% if form.status.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.status.errors %}
+                                    {{ error }}
+                                {% endfor %}
                             </div>
-                            <div class="col">
-                                <label class="form-label">{{ form.in_operation_from.label }}</label>
-                                {{ form.in_operation_from(class="form-control", type="date") }}
-                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="mb-3">
                             <label class="form-label">{{ form.note.label }}</label>
                             {{ form.note(class="form-control", rows=3) }}
+                            {% if form.note.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.note.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                         </div>
 
                         <div class="d-flex justify-content-between">
-                            <a href="{{ url_for('device_detail', id=device.id) }}" class="btn btn-outline-secondary">
-                                <i data-feather="x"></i> Zrušit
+                            <a href="{{ url_for('devices.list_devices') }}" class="btn btn-outline-secondary">
+                                <i data-feather="x"></i> Cancel
                             </a>
                             <button type="submit" class="btn btn-primary">
-                                <i data-feather="save"></i> Uložit
+                                <i data-feather="save"></i> Save
                             </button>
                         </div>
                     </form>
@@ -80,56 +102,24 @@
     </div>
 </div>
 
-<!-- Make Selection Modal -->
-<div class="modal fade" id="makeModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">Výběr výrobce</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <input type="text" class="form-control" placeholder="Nový výrobce" id="newMake">
-                    <button class="btn btn-primary mt-2" onclick="addNewMake()">
-                        <i data-feather="plus"></i> Přidat
-                    </button>
-                </div>
-                <div class="list-group">
-                    {% for make in ['Acer', 'Alcatel', 'Apple', 'HTC', 'HUAWEI', 'Lenovo', 'LG', 'Motorola', 'Nokia', 'Google', 'Qtek', 'Samsung', 'Sony'] %}
-                    <button type="button" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" 
-                            onclick="selectMake('{{ make }}')">
-                        {{ make }}
-                        <i data-feather="chevron-right"></i>
-                    </button>
-                    {% endfor %}
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
-function selectMake(make) {
-    document.getElementById('make').value = make;
-    bootstrap.Modal.getInstance(document.getElementById('makeModal')).hide();
-}
-
-function addNewMake() {
-    const newMake = document.getElementById('newMake').value;
-    if (newMake) {
-        selectMake(newMake);
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
-    // Initialize date inputs with Czech format
-    const dateInputs = document.querySelectorAll('input[type="date"]');
-    dateInputs.forEach(input => {
-        const date = input.value;
-        if (date) {
-            input.value = date.split('.').reverse().join('-');
-        }
+    // Handle make change to update model options
+    const makeSelect = document.getElementById('make');
+    const modelSelect = document.getElementById('model');
+
+    makeSelect.addEventListener('change', function() {
+        const make = this.value;
+        fetch(`/devices/models/${make}`)
+            .then(response => response.json())
+            .then(models => {
+                modelSelect.innerHTML = '';
+                models.forEach(([code, text]) => {
+                    const option = new Option(text, code);
+                    modelSelect.add(option);
+                });
+            })
+            .catch(error => console.error('Error loading models:', error));
     });
 });
 </script>
