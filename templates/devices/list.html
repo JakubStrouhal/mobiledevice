@@ -70,15 +70,11 @@
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Name</label>
-                    <input type="text" class="form-control" id="nameFilter" name="name" 
-                           placeholder="Search..." value="{{ request.args.get('name', '') }}"
-                           onchange="updateFilters()">
+                    <input type="text" class="form-control" placeholder="Search...">
                 </div>
                 <div class="col-md-2">
                     <label class="form-label">Surname</label>
-                    <input type="text" class="form-control" id="surnameFilter" name="surname" 
-                           placeholder="Search..." value="{{ request.args.get('surname', '') }}"
-                           onchange="updateFilters()">
+                    <input type="text" class="form-control" placeholder="Search...">
                 </div>
             </div>
         </div>
@@ -113,7 +109,7 @@
                 </thead>
                 <tbody>
                     {% for employee in employees %}
-                    <tr class="employee-row" data-employee-id="{{ employee.id }}" style="cursor: pointer;" onclick="handleEmployeeRowClick(this, {{ employee.id }})">
+                    <tr class="employee-row" data-employee-id="{{ employee.id }}" style="cursor: pointer;">
                         <td>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="employee" value="{{ employee.id }}">
@@ -135,9 +131,9 @@
                         <td>{{ employee.entry_date.strftime('%d.%m.%Y') if employee.entry_date else '' }}</td>
                         <td>{{ employee.exit_date.strftime('%d.%m.%Y') if employee.exit_date else '' }}</td>
                         <td class="d-flex gap-2">
-                            <a href="{{ url_for('devices.employee_edit', id=employee.id) }}" class="btn btn-sm btn-icon btn-outline-secondary">
+                            <button class="btn btn-sm btn-icon btn-outline-secondary">
                                 <i data-feather="edit-2"></i>
-                            </a>
+                            </button>
                             <form method="POST" action="{{ url_for('devices.employee_toggle_status', id=employee.id) }}" class="d-inline">
                                 <button type="submit" class="btn btn-sm btn-icon {% if employee.state == 'active' %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
                                     <i data-feather="{% if employee.state == 'active' %}user-x{% else %}user-check{% endif %}"></i>
@@ -327,88 +323,123 @@
 
     <!-- Issue New Device Button -->
     <a href="{{ url_for('devices.device_new') }}" class="btn btn-primary rounded-pill position-absolute bottom-0 start-50 translate-middle-x mb-4">
-        <i data-feather="plus"></i> Issue a new
-    </a>
-</div>
 <script>
-function updateFilters() {
-    const name = document.getElementById('nameFilter').value;
-    const surname = document.getElementById('surnameFilter').value;
-    const url = new URL(window.location.href);
-    url.searchParams.set('name', name);
-    url.searchParams.set('surname', surname);
-    window.location.href = url.toString();
-}
-
 function updateStatusFilter(value) {
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('show_inactive', value);
     window.location.href = currentUrl.toString();
 }
+</script>
+        <i data-feather="plus"></i> Issue a new
+    </a>
+</div>
+<script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Close panel buttons
-    document.getElementById('closeContextPanel')?.addEventListener('click', function() {
-        const panel = document.getElementById('contextPanel');
-        panel.style.transform = 'translateX(100%)';
-        // Hide panel after transition
-        setTimeout(() => {
-            panel.style.display = 'none';
-        }, 300); // Match transition duration
-    });
-    
-    // Initialize tooltips
-    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    tooltipTriggerList.map(function (tooltipTriggerEl) {
-        return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-});
+    const contextPanel = document.getElementById('contextPanel');
+    const closeButton = document.getElementById('closeContextPanel');
+    const issueNewPanel = document.getElementById('issueNewPanel');
+    const issueNewButton = document.getElementById('issueNewButton');
+    const closeIssueNewButton = document.getElementById('closeIssueNewPanel');
+    const employeeCheckboxes = document.querySelectorAll('input[name="employee"]');
+    const employeeRows = document.querySelectorAll('.employee-row');
 
-function handleEmployeeRowClick(row, employeeId) {
-    // Remove active class from all rows
-    document.querySelectorAll('.employee-row').forEach(r => r.classList.remove('table-active'));
-    
-    // Add active class to clicked row
-    row.classList.add('table-active');
-    
-    // Get and show context panel
-    const panel = document.getElementById('contextPanel');
-    
-    // Fetch employee details
-    fetch(`/devices/employee/${employeeId}/details`)
-        .then(response => response.json())
-        .then(data => {
-            // Update panel content
-            document.querySelector('#contextPanel h4').textContent = `${data.first_name} ${data.last_name}`;
-            document.querySelector('#contextPanel .text-muted').textContent = data.position || '';
-            document.querySelector('#contextPanel .badge').innerHTML = 
-                `<i data-feather="smartphone"></i> ${data.device_count}
-                 <i data-feather="credit-card"></i> ${data.sim_count}`;
-            
-            // Show panel with animation
-            panel.style.transform = 'translateX(0)';
-            
-            // Re-initialize Feather icons
-            if (typeof feather !== 'undefined') {
-                feather.replace();
+    // Handle row clicks
+    employeeRows.forEach(row => {
+        row.addEventListener('click', function(e) {
+            // Don't trigger if clicking on checkbox or buttons
+            if (e.target.closest('.form-check') || e.target.closest('.btn')) {
+                return;
             }
             
-            // Enable the issue new button
-            document.getElementById('issueNewButton').disabled = false;
-        })
-        .catch(error => {
-            console.error('Error fetching employee details:', error);
-            alert('Error loading employee details');
-            panel.style.transform = 'translateX(100%)';
+            const employeeId = this.dataset.employeeId;
+            
+            // Remove active class from all rows
+            employeeRows.forEach(r => r.classList.remove('table-active'));
+            // Add active class to clicked row
+            this.classList.add('table-active');
+            
+            // Show context panel
+            contextPanel.style.transform = 'translateX(0)';
+            issueNewPanel.style.transform = 'translateX(100%)';
+            
+            // Update context panel content through AJAX
+            fetch(`/devices/employee/${employeeId}/details`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update context panel content
+                    document.querySelector('#contextPanel h4').textContent = `${data.first_name} ${data.last_name}`;
+                    document.querySelector('#contextPanel .text-muted').textContent = data.position || '';
+                    
+                    // Update device and SIM counts
+                    const badgeContent = document.querySelector('#contextPanel .badge');
+                    badgeContent.innerHTML = `
+                        <i data-feather="smartphone"></i> ${data.device_count}
+                        <i data-feather="credit-card"></i> ${data.sim_count}
+                    `;
+                    
+                    // Re-initialize Feather icons
+                    if (typeof feather !== 'undefined') {
+                        feather.replace();
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         });
-}
+    });
+    
+    // Handle context panel open buttons
+    document.querySelectorAll('[data-toggle="context-panel"]').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault();
+            contextPanel.style.transform = 'translateX(0)';
+            issueNewPanel.style.transform = 'translateX(100%)'; // Close issue panel if open
+        });
+    });
 
-function updateFilters() {
-    const name = document.getElementById('nameFilter').value;
-    const surname = document.getElementById('surnameFilter').value;
-    const url = new URL(window.location.href);
-    url.searchParams.set('name', name);
-    url.searchParams.set('surname', surname);
-    window.location.href = url.toString();
-}
+    // Handle close button click
+    closeButton.addEventListener('click', function() {
+        contextPanel.style.transform = 'translateX(100%)';
+    });
+
+    // Handle issue new panel
+    issueNewButton.addEventListener('click', function() {
+        issueNewPanel.style.transform = 'translateX(0)';
+        contextPanel.style.transform = 'translateX(100%)'; // Close context panel if open
+    });
+
+    closeIssueNewButton.addEventListener('click', function() {
+        issueNewPanel.style.transform = 'translateX(100%)';
+    });
+
+    // Handle employee selection
+    employeeCheckboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const isEmployeeSelected = Array.from(employeeCheckboxes).some(cb => cb.checked);
+            issueNewButton.disabled = !isEmployeeSelected;
+        });
+    });
+
+    // Handle form submission
+    document.getElementById('issueNewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const formData = new FormData(this);
+        fetch('/devices/new', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                issueNewPanel.style.transform = 'translateX(100%)';
+                location.reload(); // Refresh to show new device
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+
+    // Initialize feather icons
+    if (typeof feather !== 'undefined') {
+        feather.replace();
+    }
+});
 </script>
 {% endblock %}

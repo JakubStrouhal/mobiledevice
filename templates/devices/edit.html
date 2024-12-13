@@ -138,8 +138,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(response => response.json())
             .then(models => {
                 modelSelect.innerHTML = '';
-                models.forEach(model => {
-                    const option = new Option(model.label, model.value);
+                models.forEach(([code, text]) => {
+                    const option = new Option(text, code);
                     modelSelect.add(option);
                 });
             })

@@ -1,28 +1,13 @@
 import os
 import logging
-from logging.handlers import RotatingFileHandler
 from flask import Flask, render_template, request, jsonify, redirect, url_for
 from flask_babel import Babel
 from flask_swagger_ui import get_swaggerui_blueprint
-from flask_wtf.csrf import CSRFProtect
 from swagger import swagger_config
 from sqlalchemy import text as sqlalchemy_text
 from extensions import db
 
-csrf = CSRFProtect()
-
-# Configure logging
-if os.environ.get('FLASK_ENV') == 'production':
-    logging.basicConfig(
-        level=logging.INFO,
-        format='%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]',
-        handlers=[
-            RotatingFileHandler('app.log', maxBytes=10000000, backupCount=10),
-            logging.StreamHandler()
-        ]
-    )
-else:
-    logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 babel = Babel()
 
@@ -30,10 +15,10 @@ def create_app():
     app = Flask(__name__)
     
     # Configuration
-    # Always use production config for deployment
-    app.config.from_object('config.ProductionConfig')
-    # Ensure debug mode is disabled
-    app.debug = False
+    if os.environ.get('FLASK_ENV') == 'production':
+        app.config.from_object('config.ProductionConfig')
+    else:
+        app.config.from_object('config.Config')
         
     # Add security headers in production
     @app.after_request
@@ -47,7 +32,6 @@ def create_app():
     from extensions import db
     db.init_app(app)
     babel.init_app(app)
-    csrf.init_app(app)
     
     def get_locale():
         return 'cs'
@@ -119,6 +103,4 @@ def register_blueprints(app):
 register_blueprints(app)
 
 if __name__ == '__main__':
-    # Production settings with proper host binding
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+    app.run(host='0.0.0.0', port=5000, debug=True)
