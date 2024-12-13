@@ -4,7 +4,7 @@ from models import (
     Phone, DeviceMake, DeviceModel, PhoneStatus,
     User, PhoneAssignment, PhoneSimAssignment
 )
-from forms import PhoneForm
+from forms import PhoneForm, EmployeeForm # Added import for EmployeeForm
 from app import db
 from datetime import datetime
 
