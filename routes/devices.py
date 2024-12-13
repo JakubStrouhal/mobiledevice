@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask import current_app
+from sqlalchemy import text
 from models import (
     Phone, DeviceMake, DeviceModel, PhoneStatus,
     User, PhoneAssignment, PhoneSimAssignment
@@ -26,26 +27,45 @@ def list_devices():
         db.session.add(user)
         db.session.commit()
     
-    # Get all devices with their assignments
-    devices = Phone.query.all()
+    # Get all employees with their device counts from the view
+    employees_query = """
+        SELECT * FROM employees.employee_overview 
+        ORDER BY last_name, first_name
+    """
+    result = db.session.execute(text(employees_query))
+    employees = result.fetchall()
     
-    # Get devices assigned to the demo user
-    user_devices = Phone.query\
-        .join(PhoneAssignment)\
-        .filter(
-            PhoneAssignment.user_id == user.id,
-            PhoneAssignment.returned_date.is_(None)
-        ).all()
+    # Get devices associated with employees
+    devices = []
+    for employee in employees:
+        employee_devices = Phone.query\
+            .join(PhoneAssignment)\
+            .filter(
+                PhoneAssignment.user_id == employee.id,
+                PhoneAssignment.returned_date.is_(None)
+            ).all()
+        devices.extend(employee_devices)
     
-    # Count assigned devices and SIM cards
-    device_count = len(user_devices)
-    sim_count = PhoneSimAssignment.query.filter(
-        PhoneSimAssignment.user_id == user.id,
-        PhoneSimAssignment.returned_date.is_(None)
-    ).count()
+    # Keep existing user data for context panel
+    user_devices = []
+    device_count = 0
+    sim_count = 0
+    if user:
+        user_devices = Phone.query\
+            .join(PhoneAssignment)\
+            .filter(
+                PhoneAssignment.user_id == user.id,
+                PhoneAssignment.returned_date.is_(None)
+            ).all()
+        device_count = len(user_devices)
+        sim_count = PhoneSimAssignment.query.filter(
+            PhoneSimAssignment.user_id == user.id,
+            PhoneSimAssignment.returned_date.is_(None)
+        ).count()
     
     return render_template('devices/list.html',
                          devices=devices,
+                         employees=employees,
                          user=user,
                          user_devices=user_devices,
                          device_count=device_count,

@@ -95,28 +95,28 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for device in devices %}
+                    {% for employee in employees %}
                     <tr>
                         <td>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="employee" value="{{ device.id }}">
-                                <label class="form-check-label">{{ device.employee_id }}</label>
+                                <input class="form-check-input" type="radio" name="employee" value="{{ employee.id }}">
+                                <label class="form-check-label">{{ employee.employee_id }}</label>
                             </div>
                         </td>
                         <td>
-                            <img src="/static/images/flags/cz.svg" alt="CZ" width="24">
+                            <img src="/static/images/flags/{{ employee.country|lower }}.svg" alt="{{ employee.country }}" width="24">
                         </td>
                         <td>
-                            <span class="badge bg-{{ 'success' if device.status == 'ISSUED' else 'secondary' }}">
-                                {{ device.status }}
+                            <span class="badge bg-{{ 'success' if employee.state == 'active' else 'warning' if employee.state == 'maternity_leave' else 'secondary' }}">
+                                {{ employee.state|title }}
                             </span>
                         </td>
-                        <td>{{ device.user.first_name if device.user else '' }}</td>
-                        <td>{{ device.user.last_name if device.user else '' }}</td>
-                        <td>{{ device.phone_count }}</td>
-                        <td>{{ device.sim_count }}</td>
-                        <td>{{ device.entry_date.strftime('%d.%m.%Y') if device.entry_date else '' }}</td>
-                        <td>{{ device.exit_date.strftime('%d.%m.%Y') if device.exit_date else '' }}</td>
+                        <td>{{ employee.first_name }}</td>
+                        <td>{{ employee.last_name }}</td>
+                        <td>{{ employee.phone_count }}</td>
+                        <td>{{ employee.sim_count }}</td>
+                        <td>{{ employee.entry_date.strftime('%d.%m.%Y') if employee.entry_date else '' }}</td>
+                        <td>{{ employee.exit_date.strftime('%d.%m.%Y') if employee.exit_date else '' }}</td>
                         <td>
                             <button class="btn btn-sm btn-icon btn-outline-primary" data-toggle="context-panel">
                                 <i data-feather="more-vertical"></i>
