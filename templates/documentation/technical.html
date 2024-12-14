@@ -1,80 +1,170 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container">
-    <h1 class="mt-4">Technical Specification</h1>
-    
-    <h2>Overview</h2>
-    <p>The project is a Flask-based web application that manages devices, including device makes, models, and user assignments. This specification outlines the database schema, application architecture, endpoint definitions, and setup instructions.</p>
+<div class="container" role="main">
+    <!-- Skip Navigation -->
+    <a href="#main-content" class="visually-hidden-focusable">Skip to main content</a>
 
-    <h2>1. Database Schema</h2>
-    <h3>Device Manufacturer</h3>
-    <ul>
-        <li>ID: SERIAL PRIMARY KEY</li>
-        <li>Code: VARCHAR(20) NOT NULL UNIQUE</li>
-        <li>Text: VARCHAR(100) NOT NULL</li>
-    </ul>
-    <h3>Device Model</h3>
-    <ul>
-        <li>ID: SERIAL PRIMARY KEY</li>
-        <li>Code: VARCHAR(20) NOT NULL</li>
-        <li>Text: VARCHAR(100) NOT NULL</li>
-        <li>Make ID: INTEGER REFERENCES device_make(id)</li>
-    </ul>
-    <h3>Devices</h3>
-    <ul>
-        <li>ID: SERIAL PRIMARY KEY</li>
-        <li>Make ID: INTEGER REFERENCES device_make(id)</li>
-        <li>Model ID: INTEGER REFERENCES device_model(id)</li>
-        <li>Serial Number: VARCHAR(100) UNIQUE NOT NULL</li>
-        <li>Buying Price: DECIMAL(10,2)</li>
-        <li>State: VARCHAR(20) DEFAULT 'active'</li>
-        <li>Note: TEXT</li>
-    </ul>
-    <h3>Users</h3>
-    <ul>
-        <li>ID: SERIAL PRIMARY KEY</li>
-        <li>Employee ID: VARCHAR(20) UNIQUE NOT NULL</li>
-        <li>First Name: VARCHAR(100) NOT NULL</li>
-        <li>Last Name: VARCHAR(100) NOT NULL</li>
-        <li>Email: VARCHAR(120)</li>
-        <li>Position: VARCHAR(100)</li>
-        <li>State: VARCHAR(20) DEFAULT 'active'</li>
-    </ul>
-    <h3>Device Assignments</h3>
-    <ul>
-        <li>ID: SERIAL PRIMARY KEY</li>
-        <li>Device ID: INTEGER REFERENCES devices(id)</li>
-        <li>User ID: INTEGER REFERENCES users(id)</li>
-        <li>Assigned Date: DATE NOT NULL</li>
-        <li>Returned Date: DATE</li>
-        <li>Note: TEXT</li>
-        <li>Protocol Number: VARCHAR(50)</li>
-    </ul>
+    <div id="main-content">
+        <h1 class="mt-4" id="page-title">Technical Specification</h1>
+        
+        <nav aria-label="Table of Contents" class="mb-4">
+            <ul class="list-unstyled">
+                <li><a href="#overview">Overview</a></li>
+                <li><a href="#database-schema">Database Schema</a></li>
+                <li><a href="#architecture">Application Architecture</a></li>
+                <li><a href="#endpoints">API Endpoints</a></li>
+                <li><a href="#setup">Setup Instructions</a></li>
+                <li><a href="#error-handling">Error Handling</a></li>
+            </ul>
+        </nav>
 
-    <h2>2. Application Architecture</h2>
-    <p>Flask Framework with SQLAlchemy for ORM operations, WTForms for handling user input, Jinja2 templating engine for dynamic HTML generation.</p>
+        <section id="overview" aria-labelledby="overview-title">
+            <h2 id="overview-title">Overview</h2>
+            <p>The project is a Flask-based web application that manages devices, including device makes, models, and user assignments. This specification outlines the database schema, application architecture, endpoint definitions, and setup instructions.</p>
+        </section>
 
-    <h2>3. Endpoints</h2>
-    <ul>
-        <li><code>GET /devices</code> - Lists all devices.</li>
-        <li><code>GET /devices/{id}</code> - Displays detailed information about a device.</li>
-        <li><code>GET /devices/models/{make}</code> - Retrieves models associated with a manufacturer.</li>
-        <li><code>GET /devices/{id}/edit</code> - Renders edit form for a specified device.</li>
-        <li><code>GET /devices/{id}/assign</code> - Renders assignment form for a specified device.</li>
-        <li><code>POST /devices/{id}/edit</code> - Handles submission of the edited device information.</li>
-        <li><code>POST /devices/{id}/assign</code> - Handles assignment of devices to users.</li>
-    </ul>
+        <section id="database-schema" aria-labelledby="schema-title">
+            <h2 id="schema-title">Database Schema</h2>
+            <div class="schema-table">
+                <h3 id="manufacturer-schema">Device Manufacturer</h3>
+                <ul aria-labelledby="manufacturer-schema">
+                    <li><strong>ID:</strong> <code>SERIAL PRIMARY KEY</code></li>
+                    <li><strong>Code:</strong> <code>VARCHAR(20) NOT NULL UNIQUE</code></li>
+                    <li><strong>Text:</strong> <code>VARCHAR(100) NOT NULL</code></li>
+                </ul>
+    <h3 id="model-schema">Device Model</h3>
+                <ul aria-labelledby="model-schema">
+                    <li><strong>ID:</strong> <code>SERIAL PRIMARY KEY</code></li>
+                    <li><strong>Code:</strong> <code>VARCHAR(20) NOT NULL</code></li>
+                    <li><strong>Text:</strong> <code>VARCHAR(100) NOT NULL</code></li>
+                    <li><strong>Make ID:</strong> <code>INTEGER REFERENCES device_make(id)</code></li>
+                </ul>
 
-    <h2>4. Application Setup Instructions</h2>
-    <ol>
-        <li>Install required packages: <code>pip install Flask Flask-SQLAlchemy Flask-WTF Flask-Babel</code></li>
-        <li>Database initialization: Create the database inside the application context.</li>
-        <li>Run the application: <code>python3 app.py</code></li>
-        <li>Bind to port 0.0.0.0 for external access: <code>app.run(host='0.0.0.0', port=5000)</code></li>
-    </ol>
+                <h3 id="devices-schema">Devices</h3>
+                <ul aria-labelledby="devices-schema">
+                    <li><strong>ID:</strong> <code>SERIAL PRIMARY KEY</code></li>
+                    <li><strong>Make ID:</strong> <code>INTEGER REFERENCES device_make(id)</code></li>
+                    <li><strong>Model ID:</strong> <code>INTEGER REFERENCES device_model(id)</code></li>
+                    <li><strong>Serial Number:</strong> <code>VARCHAR(100) UNIQUE NOT NULL</code></li>
+                    <li><strong>Buying Price:</strong> <code>DECIMAL(10,2)</code></li>
+                    <li><strong>State:</strong> <code>VARCHAR(20) DEFAULT 'active'</code></li>
+                    <li><strong>Note:</strong> <code>TEXT</code></li>
+                </ul>
 
-    <h2>5. Error Handling</h2>
-    <p>Implement error handlers for common HTTP errors (404, 500) as necessary.</p>
+                <h3 id="users-schema">Users</h3>
+                <ul aria-labelledby="users-schema">
+                    <li><strong>ID:</strong> <code>SERIAL PRIMARY KEY</code></li>
+                    <li><strong>Employee ID:</strong> <code>VARCHAR(20) UNIQUE NOT NULL</code></li>
+                    <li><strong>First Name:</strong> <code>VARCHAR(100) NOT NULL</code></li>
+                    <li><strong>Last Name:</strong> <code>VARCHAR(100) NOT NULL</code></li>
+                    <li><strong>Email:</strong> <code>VARCHAR(120)</code></li>
+                    <li><strong>Position:</strong> <code>VARCHAR(100)</code></li>
+                    <li><strong>State:</strong> <code>VARCHAR(20) DEFAULT 'active'</code></li>
+                </ul>
+
+                <h3 id="assignments-schema">Device Assignments</h3>
+                <ul aria-labelledby="assignments-schema">
+                    <li><strong>ID:</strong> <code>SERIAL PRIMARY KEY</code></li>
+                    <li><strong>Device ID:</strong> <code>INTEGER REFERENCES devices(id)</code></li>
+                    <li><strong>User ID:</strong> <code>INTEGER REFERENCES users(id)</code></li>
+                    <li><strong>Assigned Date:</strong> <code>DATE NOT NULL</code></li>
+                    <li><strong>Returned Date:</strong> <code>DATE</code></li>
+                    <li><strong>Note:</strong> <code>TEXT</code></li>
+                    <li><strong>Protocol Number:</strong> <code>VARCHAR(50)</code></li>
+                </ul>
+            </div>
+        </section>
+
+        <section id="architecture" aria-labelledby="architecture-title">
+            <h2 id="architecture-title">Application Architecture</h2>
+            <p>The application is built using:</p>
+            <ul aria-label="Architecture Components">
+                <li>Flask Framework for the web application foundation</li>
+                <li>SQLAlchemy for ORM operations and database management</li>
+                <li>WTForms for form handling and validation</li>
+                <li>Jinja2 for templating and dynamic HTML generation</li>
+            </ul>
+        </section>
+
+        <section id="endpoints" aria-labelledby="endpoints-title">
+            <h2 id="endpoints-title">API Endpoints</h2>
+            <div class="table-responsive">
+                <table class="table" aria-label="API Endpoints">
+                    <thead>
+                        <tr>
+                            <th scope="col">Method</th>
+                            <th scope="col">Endpoint</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>GET</td>
+                            <td><code>/devices</code></td>
+                            <td>Lists all devices</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
+                            <td><code>/devices/{id}</code></td>
+                            <td>Displays detailed information about a device</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
+                            <td><code>/devices/models/{make}</code></td>
+                            <td>Retrieves models associated with a manufacturer</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
+                            <td><code>/devices/{id}/edit</code></td>
+                            <td>Renders edit form for a specified device</td>
+                        </tr>
+                        <tr>
+                            <td>GET</td>
+                            <td><code>/devices/{id}/assign</code></td>
+                            <td>Renders assignment form for a specified device</td>
+                        </tr>
+                        <tr>
+                            <td>POST</td>
+                            <td><code>/devices/{id}/edit</code></td>
+                            <td>Handles submission of the edited device information</td>
+                        </tr>
+                        <tr>
+                            <td>POST</td>
+                            <td><code>/devices/{id}/assign</code></td>
+                            <td>Handles assignment of devices to users</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="setup" aria-labelledby="setup-title">
+            <h2 id="setup-title">Setup Instructions</h2>
+            <ol aria-label="Setup Steps">
+                <li>Install required packages:
+                    <pre><code>pip install Flask Flask-SQLAlchemy Flask-WTF Flask-Babel</code></pre>
+                </li>
+                <li>Initialize the database within the application context</li>
+                <li>Start the application:
+                    <pre><code>python3 app.py</code></pre>
+                </li>
+                <li>The application will be available on port 5000:
+                    <pre><code>app.run(host='0.0.0.0', port=5000)</code></pre>
+                </li>
+            </ol>
+        </section>
+
+        <section id="error-handling" aria-labelledby="error-handling-title">
+            <h2 id="error-handling-title">Error Handling</h2>
+            <p>The application implements comprehensive error handling for:</p>
+            <ul aria-label="Error Types">
+                <li>404 Not Found - When requested resources don't exist</li>
+                <li>500 Internal Server Error - For unexpected server-side issues</li>
+                <li>400 Bad Request - For invalid input validation</li>
+                <li>403 Forbidden - For unauthorized access attempts</li>
+            </ul>
+        </section>
+    </div>
 </div>
 {% endblock %}

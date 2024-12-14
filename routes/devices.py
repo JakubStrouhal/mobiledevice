@@ -389,3 +389,7 @@ def employee_toggle_status(id):
         flash('Error updating employee status', 'error')
         db.session.rollback()
         return redirect(url_for('devices.list_devices'))
+@devices.route('/documentation/technical')
+def technical_documentation():
+    """Display technical documentation page."""
+    return render_template('documentation/technical.html')

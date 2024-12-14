@@ -162,3 +162,74 @@ body {
 .employee-row.table-active .text-muted {
     color: rgba(255, 255, 255, 0.8) !important;
 }
+
+/* Technical Documentation Styles */
+.visually-hidden-focusable:not(:focus):not(:active) {
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    height: 1px;
+    overflow: hidden;
+    position: absolute;
+    white-space: nowrap;
+    width: 1px;
+}
+
+.schema-table {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.schema-table h3 {
+    color: var(--primary-color);
+    margin-top: 1.5rem;
+}
+
+.schema-table h3:first-child {
+    margin-top: 0;
+}
+
+.schema-table code {
+    background: #e9ecef;
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    color: #d63384;
+}
+
+#main-content section {
+    margin-bottom: 3rem;
+}
+
+#main-content .table {
+    margin-top: 1rem;
+}
+
+#main-content pre {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+    overflow-x: auto;
+}
+
+#main-content nav {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 4px;
+}
+
+#main-content nav a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+#main-content nav a:hover {
+    text-decoration: underline;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
